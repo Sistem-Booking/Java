@@ -2,6 +2,7 @@ import java.util.Scanner;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import java.util.Comparator;
 
 public class main {
     private static User[] users = new User[100]; // Array untuk menyimpan pengguna
@@ -9,46 +10,112 @@ public class main {
     private static Map<String, User> userMap = new HashMap<>();
     private static boolean isLoggedIn = false;
     private static User loggedInUser = null;
+    private static final String ADMIN_USERNAME = "admin";
+    private static final String ADMIN_PASSWORD = "admin123";
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.println("======================================");
-            System.out.println(" Selamat Datang di Gedung Serba Guna ");
-            System.out.println("======================================");
-            System.out.println("1. Buat Akun");
-            System.out.println("2. Masuk");
-            System.out.println("3. Keluar");
-            System.out.print("Masukkan Pilihanmu : ");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
+            if (!isLoggedIn) {
+                System.out.println("1. Login");
+                System.out.println("2. Buat Akun");
+                System.out.println("3. Keluar");
+                System.out.print("Masukkan Pilihanmu : ");
+                int choice = scanner.nextInt();
+                scanner.nextLine();
 
-            switch (choice) {
+                switch (choice) {
+                    case 1:
+                        login(scanner);
+                        break;
+                    case 2:
+                        createAccount(scanner);
+                        break;
+                    case 3:
+                        System.out.println("Terima kasih, selamat tinggal!");
+                        scanner.close();
+                        System.exit(0);
+                    default:
+                        System.out.println("Pilihan tidak valid. Silakan coba lagi.");
+                        break;
+                }
+            } else {
+                if (loggedInUser.getUsername().equals(ADMIN_USERNAME)) {
+                    adminMenu(scanner);
+                } else {
+                    userMenu(scanner);
+                }
+            }
+        }
+    }
+    private static void adminMenu(Scanner scanner) {
+        while (true) {
+            System.out.println("Admin Menu:");
+            System.out.println("1. Lihat Informasi User Terdaftar");
+            System.out.println("2. Keluar Sebagai Admin");
+            System.out.print("Masukkan Pilihan Anda: ");
+            int adminChoice = scanner.nextInt();
+            scanner.nextLine();
+    
+            switch (adminChoice) {
                 case 1:
-                    createAccount(scanner);
+                    sortUsers();
                     break;
                 case 2:
-                    loggedInUser = login(scanner);
-                    if (loggedInUser != null) {
-                        userMenu(scanner);
-                    }
-                    break;
-                case 3:
-                    System.out.println("======================================");
-                    System.out.println(" Selamat Tinggal Sampai Jumpa Lagi ! ");
-                    System.out.println("======================================");
-                    System.exit(0);
-                    break;
+                    System.out.println("=====================");
+                    System.out.println("Anda telah keluar sebagai admin");
+                    System.out.println("=====================");
+                    return;
                 default:
-                    System.out.println("==============================================");
-                    System.out.println(" Pilihanmu tidak diketahui, mohon coba lagi ");
-                    System.out.println("==============================================");
+                    System.out.println("===============================================");
+                    System.out.println("Pilihan admin tidak diketahui, mohon coba lagi");
+                    System.out.println("===============================================");
                     break;
             }
         }
     }
-
+    
+    
+    private static void sortUsers() {
+        // Buat salinan array pengguna yang tidak null (tidak termasuk admin)
+        User[] validUsers = new User[userCount];
+        int validUserCount = 0;
+    
+        for (int i = 0; i < userCount; i++) {
+            if (users[i] != null && !users[i].getUsername().equals(ADMIN_USERNAME)) {
+                validUsers[validUserCount] = users[i];
+                validUserCount++;
+            }
+        }
+    
+        // Lakukan sorting berdasarkan nomor NIK
+        Arrays.sort(validUsers, new Comparator<User>() {
+            @Override
+            public int compare(User user1, User user2) {
+                // Ganti compareTo dengan perbandingan yang sesuai
+                return user1.getNik().compareTo(user2.getNik());
+            }
+        });
+    
+        // Tampilkan daftar pengguna yang sudah diurutkan
+        System.out.println("===========================================================================");
+        System.out.println("                         Daftar Pengguna Terdaftar");
+        System.out.println("===========================================================================");
+        System.out.println(" No  | NIK           | Username          | Alamat          | No Telephone");
+        System.out.println("===========================================================================");
+    
+        for (int i = 0; i < validUserCount; i++) {
+            String no = String.format("%3d", i + 1);
+            String nik = String.format("%-15s", validUsers[i].getNik());
+            String username = String.format("%-19s", validUsers[i].getUsername());
+            String alamat = String.format("%-15s", validUsers[i].getAddress());
+            String noTelephone = String.format("%-13s", validUsers[i].getPhoneNumber());
+            System.out.println(no + " | " + nik + " | " + username + " | " + alamat + " | " + noTelephone);
+        }
+    
+        System.out.println("=======================================");
+    }
     private static void createAccount(Scanner scanner) {
         System.out.println("============");
         System.out.println(" Buat Akun ");
@@ -65,6 +132,7 @@ public class main {
             System.out.println("====================================");
             return;
         }
+        
     
         // Lanjutkan dengan meminta input lainnya
         System.out.print("Masukkan Tanggal Lahir : ");
@@ -75,7 +143,8 @@ public class main {
         String address = scanner.nextLine();
         System.out.print("Masukkan Kata Sandi : ");
         String password = scanner.nextLine();
-    
+        User newUser = new User(nik, username, dateOfBirth, phoneNumber, address, password);
+        userMap.put(username, newUser);
         // Validasi input kosong
         if (nik.isEmpty() || username.isEmpty() || password.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || dateOfBirth.isEmpty()) {
             System.out.println("======================================================");
@@ -83,8 +152,6 @@ public class main {
             System.out.println("======================================================");
             return;
         }
-    
-        User newUser = new User(nik, username, dateOfBirth, phoneNumber, address, password);
     
         // Tambahkan pengguna ke array
         if (userCount < users.length) {
@@ -103,54 +170,44 @@ public class main {
         }
     }
     private static boolean isUsernameTaken(String username) {
-        for (int i = 0; i < userCount; i++) {
-            if (users[i] != null && users[i].getUsername().equals(username)) {
-                return true; // Username sudah ada
-            }
-        }
-        return false; // Username belum digunakan
+        return userMap.containsKey(username);
     }
-    
 
-    private static User login(Scanner scanner) {
+    private static void login(Scanner scanner) {
         System.out.println("========");
         System.out.println(" Masuk ");
-        System.out.println("=======");
-    
-        while (true) {
-            System.out.print("Masukkan Username : ");
-            String username = scanner.nextLine();
-            System.out.print("Masukkan Kata Sandi : ");
-            String password = scanner.nextLine();
-    
-            User foundUser = null;
-            for (int i = 0; i < userCount; i++) {
-                if (users[i] != null && users[i].getUsername().equals(username)) {
-                    foundUser = users[i];
-                    break;
+        System.out.println("========");
+        System.out.print("Masukkan Username: ");
+        String username = scanner.nextLine();
+        System.out.print("Masukkan Kata Sandi: ");
+        String password = scanner.nextLine();
+
+        if (username.equals(ADMIN_USERNAME) && password.equals(ADMIN_PASSWORD)) {
+            System.out.println("==================================");
+            System.out.println("Admin berhasil login!");
+            System.out.println("==================================");
+            adminMenu(scanner);
+        } else {
+            User foundUser = userMap.get(username);
+            if (foundUser != null && foundUser.getPassword().equals(password)) {    
+                System.out.println("==================================");
+                System.out.println("Login berhasil. Selamat Datang, " + username + "!");
+                System.out.println("==================================");
+                loggedInUser = foundUser;
+                isLoggedIn = true;
+                if (username.equals("admin")) {
+                    adminMenu(scanner);
+                } else {
+                    userMenu(scanner);
                 }
-            }
-    
-            if (foundUser != null && foundUser.getPassword().equals(password)) {
-                System.out.println("==================================================");
-                System.out.println(" Masuk Berhasil. Selamat Datang, " + username + "!");
-                System.out.println("==================================================");
-                return foundUser;
             } else {
-                System.out.println("=======================================================");
+                System.out.println("=======================================");
                 System.out.println("Login gagal. Username atau password salah. Coba lagi.");
-                System.out.println("=======================================================");
-                System.out.println("1. Coba lagi");
-                System.out.println("2. Kembali ke menu utama");
-                System.out.print("Masukkan pilihan: ");
-                int loginChoice = scanner.nextInt();
-                scanner.nextLine();
-                if (loginChoice == 2) {
-                    return null;  // Kembali ke menu utama
-                }
+                System.out.println("=======================================");
             }
         }
     }
+    
     
 
     private static void userMenu(Scanner scanner) {
@@ -201,18 +258,6 @@ public class main {
         }
     }
 
-    private static void sortUsers() {
-        User[] users = userMap.values().toArray(new User[0]);
-        Arrays.sort(users, (user1, user2) -> user1.getUsername().compareTo(user2.getUsername()));
-
-        System.out.println("====================================================");
-        System.out.println("Daftar Pengguna setelah diurutkan berdasarkan Username");
-        System.out.println("====================================================");
-        for (User user : users) {
-            System.out.println(user.getUsername());
-        }
-    }
-
    private static void searchUser(Scanner scanner) {
     System.out.print("Masukkan Username yang ingin Anda cari: ");
     String usernameToSearch = scanner.nextLine();
@@ -256,9 +301,11 @@ class User {
     private String phoneNumber;
     private String address;
     private String password;
-    private String[] bookingInfo = new String[4]; // Array untuk menyimpan info pemesanan
+    private String[] bookingInfo = new String[5]; // Array untuk menyimpan info pemesanan
     private String[][] bookingHistory = new String[1000][4];
     private String statusPemesanan = "Tidak Dipesan"; // Status awal
+    private int bookingNumber = 0; // Berikut adalah Nomor pemesanan
+    private String[][] checkInInfo = new String[1000][6]; // Fungsi untuk Menyimpan informasi check-in
 
     public User(String nik, String username, String dateOfBirth, String phoneNumber, String address, String password) {
         this.nik = nik;
@@ -267,6 +314,16 @@ class User {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.password = password;
+    }
+    public String[] getCheckInInfo(int index) {
+        if (index >= 0 && index < bookingNumber) {
+            return checkInInfo[index];
+        }
+        return null;
+    }
+
+    public int getBookingNumber() {
+        return bookingNumber;
     }
 
     public String getPassword() {
@@ -292,6 +349,34 @@ class User {
     public String getAddress() {
         return address;
     }
+
+    public void checkInInfo(Scanner scanner) {
+        if ("Dipesan".equals(statusPemesanan)) {
+            System.out.println("=========");
+            System.out.println(" Check-In Informasi ");
+            System.out.println("=========");
+
+            // Masukkan nomor, tanggal, jam, jenis gedung, dan opsi pembayaran
+            System.out.print("Masukkan Nomor: ");
+            checkInInfo[bookingNumber][0] = scanner.nextLine();
+
+            System.out.print("Masukkan Tanggal: ");
+            checkInInfo[bookingNumber][1] = scanner.nextLine();
+
+            System.out.print("Masukkan Jam (HH:mm): ");
+            checkInInfo[bookingNumber][2] = scanner.nextLine();
+
+            checkInInfo[bookingNumber][3] = bookingInfo[0]; // Jenis Gedung
+            checkInInfo[bookingNumber][4] = bookingInfo[1]; // Opsi Pembayaran
+
+            System.out.println("Check-in berhasil!");
+        } else {
+            System.out.println("==============================");
+            System.out.println("Anda belum melakukan pemesanan");
+            System.out.println("==============================");
+        }
+    }
+
 
     public void checkIn(Scanner scanner) {
         System.out.println("=========");
@@ -324,6 +409,7 @@ class User {
                 System.out.println("Pilihan Gedung tidak valid.");
                 return;
         }
+
         System.out.println("Pilih Opsi Pembayaran:");
         System.out.println("1. DP");
         System.out.println("2. Lunas");
@@ -346,13 +432,19 @@ class User {
         // Menyimpan info pemesanan
         bookingInfo[2] = tanggalBooking;
         bookingInfo[3] = waktuBooking;
+        
+        // Simpan username yang melakukan check-in
+        bookingInfo[4] = username; // Username disimpan di indeks 4
 
         historyBooking(bookingInfo);
 
         System.out.println("Pemesanan berhasil!");
         statusPemesanan = "Dipesan";
         System.out.println("Status Pemesanan: " + statusPemesanan);
+        bookingNumber++;
     }
+
+    
     public void checkOut(Scanner scanner) {
     if ("Dipesan".equals(statusPemesanan)) {
         System.out.println("=========");
