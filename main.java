@@ -1,7 +1,10 @@
 import java.util.Scanner;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 
 public class main {
@@ -53,7 +56,8 @@ public class main {
         while (true) {
             System.out.println("Admin Menu:");
             System.out.println("1. Lihat Informasi User Terdaftar");
-            System.out.println("2. Keluar Sebagai Admin");
+            System.out.println("2. Cari User");
+            System.out.println("3. Keluar Sebagai Admin");
             System.out.print("Masukkan Pilihan Anda: ");
             int adminChoice = scanner.nextInt();
             scanner.nextLine();
@@ -63,6 +67,9 @@ public class main {
                     sortUsers();
                     break;
                 case 2:
+                    searchUser(scanner);
+                    break;
+                case 3:
                     System.out.println("=====================");
                     System.out.println("Anda telah keluar sebagai admin");
                     System.out.println("=====================");
@@ -78,82 +85,119 @@ public class main {
     
     
     private static void sortUsers() {
-        // Buat salinan array pengguna yang tidak null (tidak termasuk admin)
-        User[] validUsers = new User[userCount];
-        int validUserCount = 0;
+        // Create a list to store valid users (excluding admin)
+        List<User> validUsers = new ArrayList<>();
     
-        for (int i = 0; i < userCount; i++) {
-            if (users[i] != null && !users[i].getUsername().equals(ADMIN_USERNAME)) {
-                validUsers[validUserCount] = users[i];
-                validUserCount++;
+        for (User user : userMap.values()) {
+            if (!user.getUsername().equals(ADMIN_USERNAME)) {
+                validUsers.add(user);
             }
         }
     
-        // Lakukan sorting berdasarkan nomor NIK
-        Arrays.sort(validUsers, new Comparator<User>() {
+        // Sort the valid users based on their NIK
+        Collections.sort(validUsers, new Comparator<User>() {
             @Override
             public int compare(User user1, User user2) {
-                // Ganti compareTo dengan perbandingan yang sesuai
                 return user1.getNik().compareTo(user2.getNik());
             }
         });
     
-        // Tampilkan daftar pengguna yang sudah diurutkan
+        // Display the sorted list of valid users
         System.out.println("===========================================================================");
-        System.out.println("                         Daftar Pengguna Terdaftar");
+        System.out.println("                        Daftar Pengguna Terdaftar ");
         System.out.println("===========================================================================");
         System.out.println(" No  | NIK           | Username          | Alamat          | No Telephone");
         System.out.println("===========================================================================");
     
-        for (int i = 0; i < validUserCount; i++) {
-            String no = String.format("%3d", i + 1);
-            String nik = String.format("%-15s", validUsers[i].getNik());
-            String username = String.format("%-19s", validUsers[i].getUsername());
-            String alamat = String.format("%-15s", validUsers[i].getAddress());
-            String noTelephone = String.format("%-13s", validUsers[i].getPhoneNumber());
-            System.out.println(no + " | " + nik + " | " + username + " | " + alamat + " | " + noTelephone);
+        if (validUsers.isEmpty()) {
+            System.out.println("                       Tidak ada pengguna terdaftar");
+        } else {
+            int count = 1;
+            for (User user : validUsers) {
+                String no = String.format("%3d", count);
+                String nik = String.format("%-15s", user.getNik());
+                String username = String.format("%-19s", user.getUsername());
+                String alamat = String.format("%-15s", user.getAddress());
+                String noTelephone = String.format("%-13s", user.getPhoneNumber());
+                System.out.println(no + " | " + nik + " | " + username + " | " + alamat + " | " + noTelephone);
+                count++;
+            }
         }
     
-        System.out.println("=======================================");
+        System.out.println("===========================================================================");
     }
+    
+
     private static void createAccount(Scanner scanner) {
         System.out.println("============");
         System.out.println(" Buat Akun ");
         System.out.println("============");
-        System.out.print("Masukkan NIK : ");
-        String nik = scanner.nextLine();
-        
-        // Tambahkan kode untuk memeriksa apakah username telah digunakan
-        System.out.print("Masukkan Username : ");
-        String username = scanner.nextLine();
-        if (isUsernameTaken(username)) {
-            System.out.println("====================================");
-            System.out.println("Username telah digunakan. Silakan pilih username lain.");
-            System.out.println("====================================");
-            return;
-        }
-        
     
-        // Lanjutkan dengan meminta input lainnya
-        System.out.print("Masukkan Tanggal Lahir : ");
-        String dateOfBirth = scanner.nextLine();
-        System.out.print("Masukkan No Telephone : ");
-        String phoneNumber = scanner.nextLine();
-        System.out.print("Masukkan Alamat : ");
-        String address = scanner.nextLine();
-        System.out.print("Masukkan Kata Sandi : ");
-        String password = scanner.nextLine();
+        String nik = "";
+        String username = "";
+        String dateOfBirth = "";
+        String phoneNumber = "";
+        String address = "";
+        String password = "";
+    
+        while (nik.isEmpty()) {
+            System.out.print("Masukkan NIK : ");
+            nik = scanner.nextLine();
+    
+            if (nik.isEmpty()) {
+                System.out.println((char)27+"[01;31m NIK tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+            }
+        }
+    
+        while (username.isEmpty() || isUsernameTaken(username)) {
+            System.out.print("Masukkan Username : ");
+            username = scanner.nextLine();
+    
+            if (username.isEmpty()) {
+                System.out.println((char)27+"[01;31m Username tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+            } else if (isUsernameTaken(username)) {
+                System.out.println((char)27+"[01;31m Username telah digunakan. Silakan pilih username lain." +(char)27+"[00;00m");
+            }
+        }
+    
+        while (dateOfBirth.isEmpty()) {
+            System.out.print("Masukkan Tanggal Lahir : ");
+            dateOfBirth = scanner.nextLine();
+    
+            if (dateOfBirth.isEmpty()) {
+                System.out.println((char)27+"[01;31m Tanggal Lahir tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+            }
+        }
+    
+        while (phoneNumber.isEmpty()) {
+            System.out.print("Masukkan No Telephone : ");
+            phoneNumber = scanner.nextLine();
+    
+            if (phoneNumber.isEmpty()) {
+                System.out.println((char)27+"[01;31m Nomor Telephone tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+            }
+        }
+    
+        while (address.isEmpty()) {
+            System.out.print("Masukkan Alamat : ");
+            address = scanner.nextLine();
+    
+            if (address.isEmpty()) {
+                System.out.println((char)27+"[01;31m Alamat tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+            }
+        }
+        while (password.isEmpty()) {
+            System.out.println("Masukkan Kata Sandi : ");
+            password = scanner.nextLine();
+
+            if (password.isEmpty()) {
+                System.out.println((char)27+"[01;31m Kata Sandi tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+            }
+        }
+    
         User newUser = new User(nik, username, dateOfBirth, phoneNumber, address, password);
         userMap.put(username, newUser);
-        // Validasi input kosong
-        if (nik.isEmpty() || username.isEmpty() || password.isEmpty() || phoneNumber.isEmpty() || address.isEmpty() || dateOfBirth.isEmpty()) {
-            System.out.println("======================================================");
-            System.out.println("Tolong isi semua data yang diperlukan untuk mendaftar");
-            System.out.println("======================================================");
-            return;
-        }
     
-        // Tambahkan pengguna ke array
         if (userCount < users.length) {
             users[userCount] = newUser;
             userCount++;
@@ -169,6 +213,8 @@ public class main {
             System.out.println("==================================================");
         }
     }
+    
+    
     private static boolean isUsernameTaken(String username) {
         return userMap.containsKey(username);
     }
@@ -181,8 +227,12 @@ public class main {
         String username = scanner.nextLine();
         System.out.print("Masukkan Kata Sandi: ");
         String password = scanner.nextLine();
-
-        if (username.equals(ADMIN_USERNAME) && password.equals(ADMIN_PASSWORD)) {
+    
+        if (username.isEmpty() || password.isEmpty()) {
+            System.out.println("===========================================");
+            System.out.println((char)27+"[01;31mUsername dan password harus diisi. Coba lagi."  +(char)27+"[00;00m");
+            System.out.println("===========================================");
+        } else if (username.equals(ADMIN_USERNAME) && password.equals(ADMIN_PASSWORD)) {
             System.out.println("==================================");
             System.out.println("Admin berhasil login!");
             System.out.println("==================================");
@@ -190,9 +240,9 @@ public class main {
         } else {
             User foundUser = userMap.get(username);
             if (foundUser != null && foundUser.getPassword().equals(password)) {    
-                System.out.println("==================================");
-                System.out.println("Login berhasil. Selamat Datang, " + username + "!");
-                System.out.println("==================================");
+                System.out.println("================================================");
+                System.out.println("  Login berhasil. Selamat Datang, " + username + "!");
+                System.out.println("================================================");
                 loggedInUser = foundUser;
                 isLoggedIn = true;
                 if (username.equals("admin")) {
@@ -201,12 +251,13 @@ public class main {
                     userMenu(scanner);
                 }
             } else {
-                System.out.println("=======================================");
+                System.out.println("=======================================================");
                 System.out.println("Login gagal. Username atau password salah. Coba lagi.");
-                System.out.println("=======================================");
+                System.out.println("=======================================================");
             }
         }
     }
+    
     
     
 
@@ -258,39 +309,33 @@ public class main {
         }
     }
 
-   private static void searchUser(Scanner scanner) {
-    System.out.print("Masukkan Username yang ingin Anda cari: ");
-    String usernameToSearch = scanner.nextLine();
-    User foundUser = null;
-        for (int i = 0; i < userCount; i++) {
-            if (users[i] != null && users[i].getUsername().equals(usernameToSearch)) {
-                foundUser = users[i];
-                break;
-            }
+    private static void searchUser(Scanner scanner) {
+        System.out.print("Masukkan Username yang ingin Anda cari: ");
+        String usernameToSearch = scanner.nextLine();
+        User foundUser = userMap.get(usernameToSearch);
+    
+        if (foundUser != null) {
+            System.out.println("===================================================================================");
+            System.out.println("                           Informasi User yang Anda Cari"); 
+            System.out.println("===================================================================================");
+            System.out.println(" Nik           | Username          | Tanggal Lahir  | No Telephone | Alamat ");
+            System.out.println("===================================================================================");
+    
+            // Format output menjadi tabel
+            String nik = String.format("%-15s", foundUser.getNik());
+            String username = String.format("%-19s", foundUser.getUsername());
+            String tanggalLahir = String.format("%-16s", foundUser.getDateOfBirth());
+            String noTelephone = String.format("%-13s", foundUser.getPhoneNumber());
+            String alamat = String.format("%-12s", foundUser.getAddress());
+    
+            System.out.println(nik + " | " + username + " | " + tanggalLahir + " | " + noTelephone + " | " + alamat);
+        } else {
+            System.out.println("===============================================");
+            System.out.println("User dengan username tersebut tidak ditemukan.");
+            System.out.println("===============================================");
         }
-
-    if (foundUser != null) {
         System.out.println("===================================================================================");
-        System.out.println("            Informasi User yang Anda Cari");
-        System.out.println("===================================================================================");
-        System.out.println(" NIk           | Username          | Tanggal Lahir  | No Telephone | Alamat ");
-        System.out.println("====================================================================================");
-
-        // Format output menjadi tabel
-        String nik = String.format("%-15s", foundUser.getNik());
-        String username = String.format("%-19s", foundUser.getUsername());
-        String tanggalLahir = String.format("%-16s", foundUser.getDateOfBirth());
-        String noTelephone = String.format("%-13s", foundUser.getPhoneNumber());
-        String alamat = String.format("%-12s", foundUser.getAddress());
-
-        System.out.println(nik + " | " + username + " | " + tanggalLahir + " | " + noTelephone + " | " + alamat);
-    } else {
-        System.out.println("====================================");
-        System.out.println("User dengan username tersebut tidak ditemukan.");
-        System.out.println("====================================");
     }
-        System.out.println("=============================================================================");
-}
 
 }
 
