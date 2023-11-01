@@ -129,90 +129,66 @@ public class main {
     
 
     private static void createAccount(Scanner scanner) {
-        System.out.println("============");
-        System.out.println(" Buat Akun ");
-        System.out.println("============");
-    
-        String nik = "";
-        String username = "";
-        String dateOfBirth = "";
-        String phoneNumber = "";
-        String address = "";
-        String password = "";
-    
-        while (nik.isEmpty()) {
-            System.out.print("Masukkan NIK : ");
-            nik = scanner.nextLine();
-    
-            if (nik.isEmpty()) {
-                System.out.println((char)27+"[01;31m NIK tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-            }
-        }
-    
-        while (username.isEmpty() || isUsernameTaken(username)) {
-            System.out.print("Masukkan Username : ");
-            username = scanner.nextLine();
-    
-            if (username.isEmpty()) {
-                System.out.println((char)27+"[01;31m Username tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-            } else if (isUsernameTaken(username)) {
-                System.out.println((char)27+"[01;31m Username telah digunakan. Silakan pilih username lain." +(char)27+"[00;00m");
-            }
-        }
-    
-        while (dateOfBirth.isEmpty()) {
-            System.out.print("Masukkan Tanggal Lahir : ");
-            dateOfBirth = scanner.nextLine();
-    
-            if (dateOfBirth.isEmpty()) {
-                System.out.println((char)27+"[01;31m Tanggal Lahir tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-            }
-        }
-    
-        while (phoneNumber.isEmpty()) {
-            System.out.print("Masukkan No Telephone : ");
-            phoneNumber = scanner.nextLine();
-    
-            if (phoneNumber.isEmpty()) {
-                System.out.println((char)27+"[01;31m Nomor Telephone tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-            }
-        }
-    
-        while (address.isEmpty()) {
-            System.out.print("Masukkan Alamat : ");
-            address = scanner.nextLine();
-    
-            if (address.isEmpty()) {
-                System.out.println((char)27+"[01;31m Alamat tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-            }
-        }
-        while (password.isEmpty()) {
-            System.out.println("Masukkan Kata Sandi : ");
-            password = scanner.nextLine();
+    System.out.println("============");
+    System.out.println(" Buat Akun ");
+    System.out.println("============");
 
-            if (password.isEmpty()) {
-                System.out.println((char)27+"[01;31m Kata Sandi tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+    String[][] userData = new String[6][2]; // Array 2D untuk menyimpan data pengguna (NIK, username, dll.)
+
+    while (userData[0][1] == null || userData[1][1] == null || isUsernameTaken(userData[1][1])) {
+        for (int i = 0; i < 6; i++) {
+            switch (i) {
+                case 0:
+                    System.out.print("Masukkan NIK: ");
+                    break;
+                case 1:
+                    System.out.print("Masukkan Username: ");
+                    break;
+                case 2:
+                    System.out.print("Masukkan Tanggal Lahir: ");
+                    break;
+                case 3:
+                    System.out.print("Masukkan No Telephone: ");
+                    break;
+                case 4:
+                    System.out.print("Masukkan Alamat: ");
+                    break;
+                case 5:
+                    System.out.print("Masukkan Kata Sandi: ");
+                    break;
+                default:
+                    break;
             }
-        }
-    
-        User newUser = new User(nik, username, dateOfBirth, phoneNumber, address, password);
-        userMap.put(username, newUser);
-    
-        if (userCount < users.length) {
-            users[userCount] = newUser;
-            userCount++;
-    
-            System.out.println("==================================================");
-            System.out.println(" Akun berhasil dibuat, anda sekarang sudah login ");
-            System.out.println("==================================================");
-            isLoggedIn = true;
-            loggedInUser = newUser;
-        } else {
-            System.out.println("==================================================");
-            System.out.println("Batas maksimum pengguna tercapai. Tidak dapat membuat akun.");
-            System.out.println("==================================================");
+
+            userData[i][1] = scanner.nextLine();
+
+            if (userData[i][1] == null || userData[i][1].isEmpty()) {
+                System.out.println((char) 27 + "[01;31m " + "Kolom tidak boleh kosong. Silakan coba lagi." + (char) 27 + "[00;00m");
+                break;
+            }
         }
     }
+    
+
+    User newUser = new User(userData[0][1], userData[1][1], userData[2][1], userData[3][1], userData[4][1], userData[5][1]);
+    userMap.put(userData[1][1], newUser);
+
+    if (userCount < users.length) {
+        users[userCount] = newUser; // Simpan objek User di dalam array users
+        userCount++;
+
+        System.out.println("==================================================");
+        System.out.println(" Akun berhasil dibuat, anda sekarang sudah login ");
+        System.out.println("==================================================");
+        isLoggedIn = true;
+        loggedInUser = newUser;
+    } else {
+        System.out.println("==============================================================");
+        System.out.println("Batas maksimum pengguna tercapai. Tidak dapat membuat akun.");
+        System.out.println("==============================================================");
+    }
+}
+
     
     
     private static boolean isUsernameTaken(String username) {
@@ -397,9 +373,9 @@ class User {
 
     public void checkInInfo(Scanner scanner) {
         if ("Dipesan".equals(statusPemesanan)) {
-            System.out.println("=========");
+            System.out.println("===================");
             System.out.println(" Check-In Informasi ");
-            System.out.println("=========");
+            System.out.println("=====================");
 
             // Masukkan nomor, tanggal, jam, jenis gedung, dan opsi pembayaran
             System.out.print("Masukkan Nomor: ");
