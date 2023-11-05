@@ -410,7 +410,6 @@
         private String[][] bookingHistory = new String[1000][6];
         private String statusPemesanan = "Tidak Dipesan"; // Status awal
         private int bookingNumber = 0; // Berikut adalah Nomor pemesanan
-        private String[][] checkInInfo = new String[1000][6]; // Fungsi untuk Menyimpan informasi check-in
         private double price;
         private String statusPembayaran = "Belum Lunas";
         private static final double HARGA_PERNIKAHAN = 1500000.0;
@@ -424,12 +423,6 @@
             this.phoneNumber = phoneNumber;
             this.address = address;
             this.password = password;
-        }
-        public String[] getCheckInInfo(int index) {
-            if (index >= 0 && index < bookingNumber) {
-                return checkInInfo[index];
-            }
-            return null;
         }
 
         public int getBookingNumber() {
@@ -467,33 +460,6 @@
         NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(localeID);
         return formatRupiah.format(harga);
     }
-        public void checkInInfo(Scanner scanner) {
-            if ("Dipesan".equals(statusPemesanan)) {
-                System.out.println("===================");
-                System.out.println(" Check-In Informasi ");
-                System.out.println("=====================");
-
-                // Masukkan nomor, tanggal, jam, jenis gedung, dan opsi pembayaran
-                System.out.print("Masukkan Nomor: ");
-                checkInInfo[bookingNumber][0] = scanner.nextLine();
-
-                System.out.print("Masukkan Tanggal: ");
-                checkInInfo[bookingNumber][1] = scanner.nextLine();
-
-                System.out.print("Masukkan Jam (HH:mm): ");
-                checkInInfo[bookingNumber][2] = scanner.nextLine();
-
-                checkInInfo[bookingNumber][3] = bookingInfo[0]; // Jenis Gedung
-                checkInInfo[bookingNumber][4] = bookingInfo[1]; // Opsi Pembayaran
-
-                System.out.println("Check-in berhasil!");
-            } else {
-                System.out.println("==============================");
-                System.out.println("Anda belum melakukan pemesanan");
-                System.out.println("==============================");
-            }
-        }
-
 
         public void checkIn(Scanner scanner) {
             System.out.println("=========");
@@ -629,13 +595,13 @@
         private double getHargaGedung(String jenisGedung) {
             switch (jenisGedung.toLowerCase()) {
                 case "pernikahan":
-                    return formatToRupiah(HARGA_PERNIKAHAN);
+                    return HARGA_PERNIKAHAN; // Assuming HARGA_PERNIKAHAN is a double
                 case "olahraga":
-                    return formatToRupiah(HARGA_OLAH_RAGA);
+                    return HARGA_OLAH_RAGA; // Assuming HARGA_OLAH_RAGA is a double
                 case "rapat":
-                    return formatToRupiah(HARGA_RAPAT);
+                    return HARGA_RAPAT; // Assuming HARGA_RAPAT is a double
                 default:
-                    return 0    ; // Atau sesuaikan dengan harga default jika jenis gedung tidak dikenali
+                    return 0; // Or set a default numeric value if the jenisGedung is not recognized
             }
         }
 
@@ -691,7 +657,7 @@
         boolean hasHistory = false;
 
         for (int i = 0; i < bookingHistory.length; i++) {
-            if (bookingHistory[i][0] != null && "Lunas".equals(bookingHistory[i][5])) {
+            if (bookingHistory[i][0] != null && "DP".equals(bookingHistory[i][5])) {
                 hasHistory = true;
 
                 String no = String.format("%4d", i + 1);
