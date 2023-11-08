@@ -125,7 +125,6 @@
             User userToConfirm = userMap.get(usernameToConfirm);
             if (userToConfirm != null && userToConfirm.getStatusPemesanan().equals("Dipesan")) {
                 // Lakukan tindakan konfirmasi di sini
-                // Misalnya, mengubah status pemesanan menjadi "Dikonfirmasi"
                 userToConfirm.setStatusPemesanan("Dikonfirmasi");
         
                 System.out.println("Booking untuk " + usernameToConfirm + " telah dikonfirmasi.");
@@ -220,60 +219,76 @@
             String address = "";
             String password = "";
         
-            while (nik.isEmpty()) {
-                System.out.print("Masukkan NIK : ");
-                nik = scanner.nextLine();
+            do {
+                do {
+                    System.out.print("Masukkan NIK : ");
+                    nik = scanner.nextLine();
+                    if (nik.isEmpty()) {
+                        System.out.println((char)27+"[01;31m NIK tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+                    }
+                } while (nik.isEmpty());
+    
+            } while (nik.isEmpty());
         
-                if (nik.isEmpty()) {
-                    System.out.println((char)27+"[01;31m NIK tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-                }
-            }
-        
-            while (username.isEmpty() || isUsernameTaken(username)) {
-                System.out.print("Masukkan Username : ");
-                username = scanner.nextLine();
-        
-                if (username.isEmpty()) {
-                    System.out.println((char)27+"[01;31m Username tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-                } else if (isUsernameTaken(username)) {
-                    System.out.println((char)27+"[01;31m Username telah digunakan. Silakan pilih username lain." +(char)27+"[00;00m");
-                }
-            }
-        
-            while (dateOfBirth.isEmpty()) {
-                System.out.print("Masukkan Tanggal Lahir : ");
-                dateOfBirth = scanner.nextLine();
-        
-                if (dateOfBirth.isEmpty()) {
-                    System.out.println((char)27+"[01;31m Tanggal Lahir tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-                }
-            }
-        
-            while (phoneNumber.isEmpty()) {
-                System.out.print("Masukkan No Telephone : ");
-                phoneNumber = scanner.nextLine();
-        
-                if (phoneNumber.isEmpty()) {
-                    System.out.println((char)27+"[01;31m Nomor Telephone tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-                }
-            }
-        
-            while (address.isEmpty()) {
-                System.out.print("Masukkan Alamat : ");
-                address = scanner.nextLine();
-        
-                if (address.isEmpty()) {
-                    System.out.println((char)27+"[01;31m Alamat tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-                }
-            }
-            while (password.isEmpty()) {
-                System.out.print("Masukkan Kata Sandi : ");
-                password = scanner.nextLine();
+            do {
+                do {
+                    System.out.print("Masukkan Username: ");
+                    username = scanner.nextLine();
+                    if (username.isEmpty()) {
+                        System.out.println((char)27 + "[01;31m Username tidak boleh kosong. Silakan coba lagi." + (char)27 + "[00;00m");
+                    } else if (isUsernameTaken(username)) {
+                        System.out.println((char)27 + "[01;31m Username telah digunakan. Silakan pilih username lain." + (char)27 + "[00;00m");
+                    }
+                }while (username.isEmpty() || isUsernameTaken(username));
 
-                if (password.isEmpty()) {
-                    System.out.println((char)27+"[01;31m Kata Sandi tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
-                }
-            }
+            } while (username.isEmpty() || isUsernameTaken(username));
+        
+            do {
+                do {
+                    System.out.print("Masukkan Tanggal Lahir : ");
+                    dateOfBirth = scanner.nextLine();
+                
+                    if (dateOfBirth.isEmpty()) {
+                        System.out.println((char)27+"[01;31m Tanggal Lahir tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+                    }
+                }while (dateOfBirth.isEmpty());
+
+            }while (dateOfBirth.isEmpty());
+        
+            do {
+                do {
+                    System.out.print("Masukkan No Telephone : ");
+                    phoneNumber = scanner.nextLine();
+            
+                    if (phoneNumber.isEmpty()) {
+                        System.out.println((char)27+"[01;31m Nomor Telephone tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+                    }
+                }while (phoneNumber.isEmpty());
+
+            }while (phoneNumber.isEmpty());
+        
+            do{
+                do {
+                    System.out.print("Masukkan Alamat : ");
+                    address = scanner.nextLine();
+            
+                    if (address.isEmpty()) {
+                        System.out.println((char)27+"[01;31m Alamat tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+                    }
+                }while (address.isEmpty());
+                
+            }while (address.isEmpty());
+
+            do{
+                do {
+                    System.out.print("Masukkan Kata Sandi : ");
+                    password = scanner.nextLine();
+
+                    if (password.isEmpty()) {
+                        System.out.println((char)27+"[01;31m Kata Sandi tidak boleh kosong. Silakan coba lagi." +(char)27+"[00;00m");
+                    }
+                }while (password.isEmpty());
+            }while (password.isEmpty());
         
             User newUser = new User(nik, username, dateOfBirth, phoneNumber, address, password);
             userMap.put(username, newUser);
@@ -508,7 +523,7 @@
             String waktuBooking = scanner.nextLine();
 
             // Inisialisasi bookingInfo
-            bookingInfo = new String[5];
+            bookingInfo = new String[6];
 
             // Periksa apakah waktu yang diminta sudah dipesan oleh pengguna lain
             for (int i = 0; i < bookingNumber; i++) {
@@ -530,14 +545,77 @@
                 case 1:
                     bookingInfo[0] = "Pernikahan";
                     price = HARGA_PERNIKAHAN;
+                    System.out.println("Pilih Fasilitas Pernikahan:");
+                    System.out.println("1. PhotoBooth");
+                    System.out.println("2. Band Live");
+                    System.out.println("3. Pertunjukan Api Bunga");
+                    System.out.print("Masukkan Pilihan Fasilitas: ");
+                    int fasilitasPernikahan = scanner.nextInt();
+                    scanner.nextLine();
+                    switch (fasilitasPernikahan) {
+                        case 1:
+                            bookingInfo[5] = "PhotoBooth";
+                            break;
+                        case 2:
+                            bookingInfo[5] = "Band Live";
+                            break;
+                        case 3:
+                            bookingInfo[5] = "Pertunjukan Api Bunga";
+                            break;
+                        default:
+                            System.out.println("Pilihan Fasilitas tidak valid.");
+                            return;
+                    }
                     break;
                 case 2:
                     bookingInfo[0] = "Olahraga";
                     price = HARGA_OLAH_RAGA;
+                    System.out.println("Pilig Fasilitas Olahraga");
+                    System.out.println("1. Katering");
+                    System.out.println("2. Papan Skor");
+                    System.out.println("3. Layanan Fotografi");
+                    System.out.print("Masukkan Pilihan Fasilitas: ");
+                    int fasilitasOlahraga = scanner.nextInt();
+                    scanner.nextLine();
+                    switch (fasilitasOlahraga) {
+                        case 1:
+                            bookingInfo[5] = "Katering";
+                            break;
+                        case 2:
+                            bookingInfo[5] = "Papan Skor";
+                            break;
+                        case 3:
+                            bookingInfo[5] = "Layanan Fotografi";
+                            break;
+                        default:
+                            System.out.println("Pilihan Fasilitas tidak valid.");
+                            return;
+                    }
                     break;
                 case 3:
                     bookingInfo[0] = "Rapat";
                     price = HARGA_RAPAT;
+                    System.out.println("Pilih Fasilitas Rapat:");
+                    System.out.println("1. Proyektor");
+                    System.out.println("2. Katering");
+                    System.out.println("3. Sistem Konferensi Telephone ");
+                    System.out.print("Masukkan Pilihan Fasilitas: ");
+                    int fasilitasRapat = scanner.nextInt();
+                    scanner.nextLine();
+                    switch (fasilitasRapat) {
+                        case 1:
+                            bookingInfo[5] = "Proyektor";
+                            break;
+                        case 2:
+                            bookingInfo[5] = "Sound System";
+                            break;
+                        case 3:
+                            bookingInfo[5] = "Sistem Konferensi Telephone";
+                            break;
+                        default:
+                            System.out.println("Pilihan Fasilitas tidak valid.");
+                            return;
+                    }
                     break;
                 default:
                     System.out.println("Pilihan Gedung tidak valid.");
@@ -566,7 +644,7 @@
             // Menyimpan info pemesanan
             bookingInfo[2] = tanggalBooking;
             bookingInfo[3] = waktuBooking;
-            
+
             // Simpan username yang melakukan check-in
             bookingInfo[4] = username; // Username disimpan di indeks 4
 
@@ -577,6 +655,7 @@
             System.out.println("Status Pemesanan: " + statusPemesanan);
             bookingNumber++;
         }
+
 
         
         public void checkOut(Scanner scanner) {
