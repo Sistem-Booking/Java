@@ -119,6 +119,29 @@
         
         private static void confirmBooking(Scanner scanner) {
             System.out.println("Konfirmasi Booking:");
+            System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
+            System.out.println("| Username   | Status Pemesanan| Tanggal Booking     | Waktu Booking   | Pembayaran    |");
+            System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
+        
+            for (User user : userMap.values()) {
+                String username = user.getUsername();
+                String statusPemesanan = user.getStatusPemesanan();
+                String tanggalBooking = "Belum memesan";
+                String waktuBooking = "";
+                String pembayaran = "";
+        
+                String[] bookingInfo = user.getBookingInfo(); // Ambil informasi pemesanan
+                if (user.getStatusPemesanan().equals("Dipesan")) {
+                    tanggalBooking = bookingInfo[2];
+                    waktuBooking = bookingInfo[3];
+                    pembayaran = bookingInfo[1];
+                }
+        
+                String row = String.format("| %-10s | %-15s | %-19s | %-15s | %-13s |", username, statusPemesanan, tanggalBooking, waktuBooking, pembayaran);
+                System.out.println(row);
+            }
+        
+            System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
             System.out.print("Masukkan username pengguna yang ingin dikonfirmasi: ");
             String usernameToConfirm = scanner.nextLine();
         
@@ -458,6 +481,9 @@
         private static final double HARGA_KONFERENSI_TELEPHONE = 150000.0;
         private String tanggalBooking;
         private String waktuBooking;
+        private String tempatBooking;
+        private String fasilitasBooking;
+        private double totalPembayaran;
 
         public User(String nik, String username, String dateOfBirth, String phoneNumber, String address, String password) {
             this.nik = nik;
@@ -476,6 +502,18 @@
         }
         public int getBookingNumber() {
             return bookingNumber;
+        }
+
+        public String getTempatBooking(){
+            return tempatBooking;
+        }
+
+        public String getFasilitasBooking(){
+            return fasilitasBooking;
+        }
+
+        public double getTotalPembayaran(){
+            return totalPembayaran;
         }
 
         public String getPassword() {
