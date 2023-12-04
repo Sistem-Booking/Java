@@ -531,6 +531,7 @@ class User {
     private Map<String, Boolean> bookedSlots = new HashMap<>();
     private boolean slotTersedia;
     private boolean kembali = false;
+    private User loggedInUser;
 
     public User(String nik, String username, String dateOfBirth, String phoneNumber, String address, String password) {
         this.nik = nik;
@@ -816,7 +817,49 @@ class User {
         return bookedSlots.containsKey(key);
     }
 
+    public void setLoggedInUser(User user){
+        this.loggedInUser = user;
+    }
 
+    public void checkIn() {
+        System.out.println("=========================================================================================================");
+        System.out.println("                                               Check-In");
+        System.out.println("=========================================================================================================");
+        System.out.println("No | Tanggal Pemesanan | Jam Pemesanan | Jenis Gedung | Opsi Pembayaran | Harga Gedung | Status");
+        System.out.println("=========================================================================================================");
+
+        boolean hasHistory = false;
+
+        for (int i = 0; i < bookingHistory.length; i++) {
+            if (bookingHistory[i][0] != null && username.equals(bookingHistory[i][6])) { // Cek username dari user saja
+                String no = String.format("%4d", i + 1);
+                String tanggal = String.format("%16s", bookingHistory[i][2]);
+                String jam = String.format("%13s", bookingHistory[i][3]);
+                String jenisGedung = String.format("%12s", bookingHistory[i][0]);
+                String opsiPemesanan = String.format("%15s", bookingHistory[i][1]);
+                String hargaGedung = String.format("Rp %.2f", Double.parseDouble(bookingHistory[i][4]));
+                String status = "Belum Dikonfirmasi";
+
+                if ("Lunas".equals(bookingHistory[i][5])) {
+                    status = "Sudah Dikonfirmasi";
+                }
+
+                System.out.println(no + " | " + tanggal + " | " + jam + " | " + jenisGedung + " | " + opsiPemesanan
+                        + " | " + hargaGedung + " | " + status);
+                hasHistory = true;
+            }
+        }
+
+        if (!hasHistory) {
+            System.out.println("------------------------------------------------------------------");
+            System.out.println("|                                                                |");
+            System.out.println("|                     Belum ada Pemesanan                        |");
+            System.out.println("|                                                                |");
+            System.out.println("------------------------------------------------------------------");
+        }
+        System.out.println(
+                "================================================================================================================");
+    }
     
     public void akhiriPemesanan(Scanner scanner) {
         if ("Dipesan".equals(statusPemesanan)) {
@@ -944,41 +987,38 @@ class User {
     }
 
     public void viewBookingHistory() {
-        System.out.println(
-                "================================================================================================================");
-        System.out.println(
-                "  No  | Tanggal Pemesanan | Jam Pemesanan | Jenis Gedung | Opsi Pemesanan | Harga Gedung | Status Pembayaran");
-        System.out.println(
-                "================================================================================================================");
+        System.out.println("=======================================================================================================================");
+        System.out.println(" No | Tanggal Pemesanan | Jam Pemesanan | Jenis Gedung | Fasilitas | Opsi Pembayaran | Harga Gedung | Status Pembayaran");
+        System.out.println("=======================================================================================================================");
 
-        boolean hasHistory = false;
+        boolean hasDetails = false;
 
         for (int i = 0; i < bookingHistory.length; i++) {
-            if (bookingHistory[i][0] != null && "DP".equals(bookingHistory[i][5])) {
-                hasHistory = true;
+            if (bookingHistory[i][0] != null) {
+                hasDetails = true;
 
                 String no = String.format("%4d", i + 1);
                 String tanggal = String.format("%16s", bookingHistory[i][2]);
                 String jam = String.format("%13s", bookingHistory[i][3]);
                 String jenisGedung = String.format("%12s", bookingHistory[i][0]);
+                String fasilitas = String.format("%12s", bookingHistory[i][6]); // Ambil data fasilitas dari booking history
                 String opsiPemesanan = String.format("%15s", bookingHistory[i][1]);
                 String hargaGedung = String.format("Rp %.2f", Double.parseDouble(bookingHistory[i][4]));
-                String statusPembayaran = bookingHistory[7][i]; // Ambil status pembayaran dari booking history
+                String statusPembayaran = bookingHistory[i][5]; // Ambil status pembayaran dari booking history
 
-                System.out.println(no + " | " + tanggal + " | " + jam + " | " + jenisGedung + " | " + opsiPemesanan
-                        + " | " + hargaGedung + " | " + statusPembayaran);
+                System.out.println(no + " | " + tanggal + " | " + jam + " | " + jenisGedung + " | " + fasilitas+ " | " + opsiPemesanan + " | " + hargaGedung + " | " + statusPembayaran);
             }
         }
 
-        if (!hasHistory) {
-            System.out.println("--------------------------------------------------");
-            System.out.println("|                                                |");
-            System.out.println("|               Belum ada Pemesanan              |");
-            System.out.println("|                                                |");
-            System.out.println("--------------------------------------------------");
+        if (!hasDetails) {
+            System.out.println("------------------------------------------------");
+            System.out.println("|                                              |");
+            System.out.println("|               Belum ada Pemesanan            |");
+            System.out.println("|                                              |");
+            System.out.println("------------------------------------------------");
         }
         System.out.println(
-                "================================================================================================================");
+                "=================================================================================================================================");
     }
 
     public void informasiUser() {
