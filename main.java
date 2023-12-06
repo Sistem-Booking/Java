@@ -1,23 +1,28 @@
 import java.util.Scanner;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.text.NumberFormat;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Pattern;
 
 public class main {
     private static User[] users = new User[100]; // Array untuk menyimpan pengguna
     private static int userCount = 0;
     private static Map<String, User> userMap = new HashMap<>();
     private Map<String, Boolean> bookedSlots = new HashMap<>();
+    private ArrayList<String[]> bookingHistory;
     private static boolean isLoggedIn = false;
     private static User loggedInUser = null;
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin123";
+    private String[] bookingInfo;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -418,7 +423,7 @@ public class main {
     private static void userMenu(Scanner scanner) {
         while (true) {
             System.out.println("1. Pesan Gedung");
-            System.out.println("2. Check-In");
+            System.out.println("2. Cek Tanggal");
             System.out.println("3. Akhiri Pemesanan");
             System.out.println("4. Informasi User");
             System.out.println("5. Lihat Informasi Yang Di Booking Sekarang");
@@ -433,7 +438,7 @@ public class main {
                     loggedInUser.pemesananGedung(scanner);
                     break;
                 case 2:
-                    // loggedInUser.checkIn(scanner);
+                    loggedInUser.viewAvailableDates();
                     break;
                 case 3:
                     loggedInUser.akhiriPemesanan(scanner);
@@ -466,6 +471,7 @@ public class main {
             }
         }
     }
+
     private static void searchUser(Scanner scanner) {
         System.out.print("Masukkan Username yang ingin Anda cari: ");
         String usernameToSearch = scanner.nextLine();
@@ -543,6 +549,10 @@ class User {
         this.bookingHistory = new String[10][8];
     }
 
+    public boolean isTanggalBooked(String tanggal) {
+        return false;
+    }
+
     public void setStatusPemesanan(String string) {
     }
 
@@ -614,11 +624,12 @@ class User {
         NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(localeID);
         return formatRupiah.format(harga);
     }
+    
 
     public void pemesananGedung(Scanner scanner) {
         System.out.println("------------------------------------------------");
         System.out.println("|                                              |");
-        System.out.println("|               Halaman Check-In              |");
+        System.out.println("|               Halaman Check-In               |");
         System.out.println("|                                              |");
         System.out.println("------------------------------------------------");
         String tanggalBookingString = "";
@@ -649,7 +660,7 @@ class User {
         }
 
         // Inisialisasi bookingInfo
-        bookingInfo = new String[6];
+        this.bookingInfo = new String[6];
 
         while (true) {
             if (isSlotBooked(tanggalBookingString, waktuBookingString)) {
@@ -807,6 +818,56 @@ class User {
             }  
         }
 
+    public void viewAvailableDates() {
+        Scanner scanner = new Scanner(System.in);
+        int currentYear = LocalDate.now().getYear();
+        String year;
+
+        System.out.print("Masukkan tahun : ");
+        year = scanner.nextLine();
+
+        if (!Pattern.matches("[0-9]{4}", year) || Integer.parseInt(year) < currentYear) {
+            System.out.println("Tahun yang dimasukkan tidak valid.");
+            return;
+        }
+        System.out.println("--------------------------------------------------");
+        System.out.println("Tanggal Bulan Tahun Gedung Yang Belum Di Booking");
+        System.out.println("--------------------------------------------------");
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy"); // Ubah format di sini
+
+        int month = 12; // Desember
+        int daysInDecember = 30; // Batasan hari untuk bulan Desember
+
+        for (int day = 1; day <= daysInDecember; day++) {
+            LocalDate date = LocalDate.of(Integer.parseInt(year), month, day);
+            String formattedDate = dateFormatter.format(date);
+            boolean isBooked = isDateBooked(formattedDate);
+
+            if (isBooked) {
+                System.out.print("\u001B[31m"); // Mengubah warna teks menjadi merah
+            }
+
+            // Pengecekan apakah tanggal sesuai dengan yang dipesan di pemesananGedung
+            if (this.bookingInfo != null && this.bookingInfo.length > 2 && formattedDate.equals(this.bookingInfo[2])) {
+                System.out.print("\u001B[31m"); // Mengubah warna teks menjadi merah
+            }
+
+            System.out.print(formattedDate + "\u001B[0m"); // Kembali ke warna teks default
+
+            if (isBooked) {
+                System.out.println(" - Sudah Di Booking");
+            } else {
+                System.out.println();
+            }
+        }
+        System.out.println("--------------------------------------------------");
+    }
+
+    private boolean isDateBooked(String date) {
+        return false;
+    }
+
     private void addBookedSlot(String tanggal, String jam) {
         String key = tanggal + " " + jam;
         bookedSlots.put(key, true);
@@ -860,7 +921,6 @@ class User {
         System.out.println(
                 "================================================================================================================");
     }
-    
     public void akhiriPemesanan(Scanner scanner) {
         if ("Dipesan".equals(statusPemesanan)) {
             System.out.println("------------------------------------------------");
