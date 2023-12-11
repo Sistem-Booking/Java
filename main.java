@@ -634,190 +634,168 @@ class User {
         System.out.println("------------------------------------------------");
         String tanggalBookingString = "";
         String waktuBookingString = "";
-
-        // Validasi dan loop untuk input tanggal dengan format yang benar
-        while (true) {
-            System.out.print("Masukkan Tanggal (Format: DD-MM-YYYY): ");
-            tanggalBookingString = scanner.nextLine();
-
-            if (tanggalBookingString.matches("\\d{2}-\\d{2}-\\d{4}")) {
-                break;
-            } else {
-                System.out.println("\u001B[31mMasukkan input tanggal dengan format yang benar (contoh: 01-01-2023).\u001B[0m");
-            }
-        }
-
-        // Validasi dan loop untuk input jam dengan format yang benar
-        while (true) {
-            System.out.print("Masukkan Jam (Format: HH:mm): ");
-            waktuBookingString = scanner.nextLine();
-
-            if (waktuBookingString.matches("([01]?[0-9]|2[0-3]):[0-5][0-9]")) {
-                break;
-            } else {
-                System.out.println("\u001B[31mMasukkan input jam dengan format yang benar (contoh: 09:00).\u001B[0m");
-            }
-        }
+        int sesiPemesanan = 0;
 
         // Inisialisasi bookingInfo
         this.bookingInfo = new String[6];
+        // Input tanggal
+        System.out.print("Masukkan Tanggal (Format: DD-MM-YYYY): ");
+        tanggalBookingString = scanner.nextLine();
 
-        while (true) {
-            if (isSlotBooked(tanggalBookingString, waktuBookingString)) {
-                System.out.println("\u001B[31mAnda harus memilih tanggal dan jam yang berbeda karena tanggal dan jam tersebut sudah dibooking.\u001B[0m");
-                System.out.print("Masukkan Tanggal (Format: DD-MM-YYYY): ");
-                tanggalBookingString = scanner.nextLine();
-
-                System.out.print("Masukkan Jam (Format: HH:mm): ");
-                waktuBookingString = scanner.nextLine();
-            } else {
-                addBookedSlot(tanggalBookingString, waktuBookingString);
-                slotTersedia = true;
-                break;
-            }
+        if (!tanggalBookingString.matches("\\d{2}-\\d{2}-\\d{4}")) {
+            System.out.println("\u001B[31mMasukkan input tanggal dengan format yang benar (contoh: 01-01-2023).\u001B[0m");
+            return;
         }
 
-        if (slotTersedia) {
-            ArrayList<String> fasilitasTerpilih = new ArrayList<>();
-            System.out.println("Pilih Opsi Gedung:");
-            System.out.println("1. Pernikahan - " + formatToRupiah(HARGA_PERNIKAHAN));
-            System.out.println("2. Olahraga - " + formatToRupiah(HARGA_OLAH_RAGA));
-            System.out.println("3. Rapat - " + formatToRupiah(HARGA_RAPAT));
-            System.out.print("Masukkan Pilihan Gedung: ");
-            int memilihGedung = scanner.nextInt();
-            scanner.nextLine();
-            
-            switch (memilihGedung) {
-                case 1:
-                    bookingInfo[0] = "Pernikahan";
-                    price = HARGA_PERNIKAHAN;
-                    System.out.println("Pilih Fasilitas Pernikahan:");
-                    System.out.println("1. PhotoBooth - " + formatToRupiah(HARGA_PHOTOBOOTH));
-                    System.out.println("2. Band Live - " + formatToRupiah(HARGA_BAND_LIVE));
-                    System.out.println("3. Pertunjukan Api Bunga - " + formatToRupiah(HARGA_API_BUNGA));
-                    System.out.print("Masukkan Pilihan Fasilitas: ");
-                    int fasilitasPernikahan = scanner.nextInt();
-                    scanner.nextLine();
-                        switch (fasilitasPernikahan) {
-                            case 1:
-                                bookingInfo[5] = "PhotoBooth";
-                                price += HARGA_PHOTOBOOTH;
-                                break;
-                            case 2:
-                                bookingInfo[5] = "Band Live";
-                                price += HARGA_BAND_LIVE;
-                                break;
-                            case 3:
-                                bookingInfo[5] = "Pertunjukan Api Bunga";
-                                price += HARGA_API_BUNGA;
-                                break;
-                            default:
-                                System.out.println("Pilihan Fasilitas tidak valid.");
-                                return;
-                        }
-                        break;
-                    case 2:
-                        bookingInfo[0] = "Olahraga";
-                        price = HARGA_OLAH_RAGA;
-                        System.out.println("Pilih Fasilitas Olahraga:");
-                        System.out.println("1. Katering - " + formatToRupiah(HARGA_KATERING));
-                        System.out.println("2. Papan Skor - " + formatToRupiah(HARGA_PAPAN_SKOR));
-                        System.out.println("3. Layanan Fotografi - " + formatToRupiah(HARGA_LAYANAN_FOTOGRAFI));
-                        System.out.print("Masukkan Pilihan Fasilitas: ");
-                        int fasilitasOlahraga = scanner.nextInt();
-                        scanner.nextLine();
-                        switch (fasilitasOlahraga) {
-                            case 1:
-                                bookingInfo[5] = "Katering";
-                                price += HARGA_KATERING;
-                                break;
-                            case 2:
-                                bookingInfo[5] = "Papan Skor";
-                                price += HARGA_PAPAN_SKOR;
-                                break;
-                            case 3:
-                                bookingInfo[5] = "Layanan Fotografi";
-                                price += HARGA_LAYANAN_FOTOGRAFI;
-                                break;
-                            default:
-                                System.out.println("Pilihan Fasilitas tidak valid.");
-                                return;
-                        }
-                        break;
-                    case 3:
-                        bookingInfo[0] = "Rapat";
-                        price = HARGA_RAPAT;
-                        System.out.println("Pilih Fasilitas Rapat:");
-                        System.out.println("1. Proyektor - " + formatToRupiah(HARGA_PROYEKTOR));
-                        System.out.println("2. Katering - " + formatToRupiah(HARGA_KATERING_RAPAT));
-                        System.out.println("3. Sistem Konferensi Telephone - " + formatToRupiah(HARGA_KONFERENSI_TELEPHONE));
-                        System.out.print("Masukkan Pilihan Fasilitas: ");
-                        int fasilitasRapat = scanner.nextInt();
-                        scanner.nextLine();
-                        switch (fasilitasRapat) {
-                            case 1:
-                                bookingInfo[5] = "Proyektor";
-                                price += HARGA_PROYEKTOR;
-                                break;
-                            case 2:
-                                bookingInfo[5] = "Katering";
-                                price += HARGA_KATERING_RAPAT;
-                                break;
-                            case 3:
-                                bookingInfo[5] = "Sistem Konferensi Telephone";
-                                price += HARGA_KONFERENSI_TELEPHONE;
-                                break;
-                            default:
-                                System.out.println("Pilihan Fasilitas tidak valid.");
-                                return;
-                        }
-                        break;
-                    default:
-                        System.out.println("Pilihan Gedung tidak valid.");
-                        return;
-                }
+        System.out.println("Pilih Sesi Pemesanan:");
+        System.out.println("1. Sesi 1 ( Jam 09:00 - 15:00 )");
+        System.out.println("2. Sesi 2 ( Jam 16:00 - 22:00 )");
+        System.out.print("Masukkan Pilihan Sesi: ");
+        sesiPemesanan = scanner.nextInt();
+        scanner.nextLine();
 
-                System.out.println("Total Harga: " + formatToRupiah(price));
-
-                System.out.println("Pilih Opsi Pembayaran:");
-                System.out.println("1. DP");
-                System.out.println("2. Lunas");
-                System.out.print("Masukkan Pilihan Pembayaran: ");
-                int paymentChoice = scanner.nextInt();
+        if (sesiPemesanan != 1 && sesiPemesanan != 2) {
+            System.out.println("Pilihan Sesi tidak valid.");
+            return;
+        }
+        ArrayList<String> fasilitasTerpilih = new ArrayList<>();
+                System.out.println("Pilih Opsi Gedung:");
+                System.out.println("1. Pernikahan - " + formatToRupiah(HARGA_PERNIKAHAN));
+                System.out.println("2. Olahraga - " + formatToRupiah(HARGA_OLAH_RAGA));
+                System.out.println("3. Rapat - " + formatToRupiah(HARGA_RAPAT));
+                System.out.print("Masukkan Pilihan Gedung: ");
+                int memilihGedung = scanner.nextInt();
                 scanner.nextLine();
-
-                switch (paymentChoice) {
+                
+                switch (memilihGedung) {
                     case 1:
-                        bookingInfo[1] = "DP";
-                        break;
-                    case 2:
-                        bookingInfo[1] = "Lunas";
-                        break;
-                    default:
-                        System.out.println("Pilihan Pembayaran tidak valid.");
-                        return;
+                        bookingInfo[0] = "Pernikahan";
+                        price = HARGA_PERNIKAHAN;
+                        System.out.println("Pilih Fasilitas Pernikahan:");
+                        System.out.println("1. PhotoBooth - " + formatToRupiah(HARGA_PHOTOBOOTH));
+                        System.out.println("2. Band Live - " + formatToRupiah(HARGA_BAND_LIVE));
+                        System.out.println("3. Pertunjukan Api Bunga - " + formatToRupiah(HARGA_API_BUNGA));
+                        System.out.print("Masukkan Pilihan Fasilitas: ");
+                        int fasilitasPernikahan = scanner.nextInt();
+                        scanner.nextLine();
+                            switch (fasilitasPernikahan) {
+                                case 1:
+                                    bookingInfo[5] = "PhotoBooth";
+                                    price += HARGA_PHOTOBOOTH;
+                                    break;
+                                case 2:
+                                    bookingInfo[5] = "Band Live";
+                                    price += HARGA_BAND_LIVE;
+                                    break;
+                                case 3:
+                                    bookingInfo[5] = "Pertunjukan Api Bunga";
+                                    price += HARGA_API_BUNGA;
+                                    break;
+                                default:
+                                    System.out.println("Pilihan Fasilitas tidak valid.");
+                                    return;
+                            }
+                            break;
+                        case 2:
+                            bookingInfo[0] = "Olahraga";
+                            price = HARGA_OLAH_RAGA;
+                            System.out.println("Pilih Fasilitas Olahraga:");
+                            System.out.println("1. Katering - " + formatToRupiah(HARGA_KATERING));
+                            System.out.println("2. Papan Skor - " + formatToRupiah(HARGA_PAPAN_SKOR));
+                            System.out.println("3. Layanan Fotografi - " + formatToRupiah(HARGA_LAYANAN_FOTOGRAFI));
+                            System.out.print("Masukkan Pilihan Fasilitas: ");
+                            int fasilitasOlahraga = scanner.nextInt();
+                            scanner.nextLine();
+                            switch (fasilitasOlahraga) {
+                                case 1:
+                                    bookingInfo[5] = "Katering";
+                                    price += HARGA_KATERING;
+                                    break;
+                                case 2:
+                                    bookingInfo[5] = "Papan Skor";
+                                    price += HARGA_PAPAN_SKOR;
+                                    break;
+                                case 3:
+                                    bookingInfo[5] = "Layanan Fotografi";
+                                    price += HARGA_LAYANAN_FOTOGRAFI;
+                                    break;
+                                default:
+                                    System.out.println("Pilihan Fasilitas tidak valid.");
+                                    return;
+                            }
+                            break;
+                        case 3:
+                            bookingInfo[0] = "Rapat";
+                            price = HARGA_RAPAT;
+                            System.out.println("Pilih Fasilitas Rapat:");
+                            System.out.println("1. Proyektor - " + formatToRupiah(HARGA_PROYEKTOR));
+                            System.out.println("2. Katering - " + formatToRupiah(HARGA_KATERING_RAPAT));
+                            System.out.println("3. Sistem Konferensi Telephone - " + formatToRupiah(HARGA_KONFERENSI_TELEPHONE));
+                            System.out.print("Masukkan Pilihan Fasilitas: ");
+                            int fasilitasRapat = scanner.nextInt();
+                            scanner.nextLine();
+                            switch (fasilitasRapat) {
+                                case 1:
+                                    bookingInfo[5] = "Proyektor";
+                                    price += HARGA_PROYEKTOR;
+                                    break;
+                                case 2:
+                                    bookingInfo[5] = "Katering";
+                                    price += HARGA_KATERING_RAPAT;
+                                    break;
+                                case 3:
+                                    bookingInfo[5] = "Sistem Konferensi Telephone";
+                                    price += HARGA_KONFERENSI_TELEPHONE;
+                                    break;
+                                default:
+                                    System.out.println("Pilihan Fasilitas tidak valid.");
+                                    return;
+                            }
+                            break;
+                        default:
+                            System.out.println("Pilihan Gedung tidak valid.");
+                            return;
+                    }
+
+                    System.out.println("Total Harga: " + formatToRupiah(price));
+
+                    System.out.println("Pilih Opsi Pembayaran:");
+                    System.out.println("1. DP");
+                    System.out.println("2. Lunas");
+                    System.out.print("Masukkan Pilihan Pembayaran: ");
+                    int paymentChoice = scanner.nextInt();
+                    scanner.nextLine();
+
+                    switch (paymentChoice) {
+                        case 1:
+                            bookingInfo[1] = "DP";
+                            break;
+                        case 2:
+                            bookingInfo[1] = "Lunas";
+                            break;
+                        default:
+                            System.out.println("Pilihan Pembayaran tidak valid.");
+                            return;
+                    }
+
+                    // Menyimpan info pemesanan
+                    bookingInfo[2] = tanggalBookingString;
+                    bookingInfo[3] = waktuBookingString;
+
+                    // Simpan username yang melakukan check-in
+                    bookingInfo[4] = username; // Username disimpan di indeks 4
+
+                    historyBooking(bookingInfo);
+
+                    System.out.println("------------------------------------------------");
+                    System.out.println("|                                              |");
+                    System.out.println("|               Pemesanan Berhasil             |");
+                    System.out.println("|                                              |");
+                    System.out.println("------------------------------------------------");
+                    statusPemesanan = "Dipesan";
+                    System.out.println("Status Pemesanan: " + statusPemesanan);
+                    bookingNumber++;
                 }
-
-                // Menyimpan info pemesanan
-                bookingInfo[2] = tanggalBookingString;
-                bookingInfo[3] = waktuBookingString;
-
-                // Simpan username yang melakukan check-in
-                bookingInfo[4] = username; // Username disimpan di indeks 4
-
-                historyBooking(bookingInfo);
-
-                System.out.println("------------------------------------------------");
-                System.out.println("|                                              |");
-                System.out.println("|               Pemesanan Berhasil             |");
-                System.out.println("|                                              |");
-                System.out.println("------------------------------------------------");
-                statusPemesanan = "Dipesan";
-                System.out.println("Status Pemesanan: " + statusPemesanan);
-                bookingNumber++;
-            }  
-        }
-
     public void viewAvailableDates() {
         Scanner scanner = new Scanner(System.in);
         int currentYear = LocalDate.now().getYear();
@@ -959,11 +937,9 @@ class User {
             System.out.println("              Struk Detail Pemesanan");
             System.out.println("=================================================");
             System.out.println("  Tanggal Pemesanan: " + bookingInfo[2]);
-            System.out.println("  Jam Pemesanan: " + bookingInfo[3]);
             System.out.println("  Jenis Gedung: " + bookingInfo[0]);
             System.out.println("  Harga Gedung: " + formatToRupiah(price));
             System.out.println("  Opsi Pembayaran: " + bookingInfo[1]);
-            System.out.println("  Status Pembayaran: " + statusPembayaran); // Tampilkan status pembayaran
             System.out.println("=================================================");
 
             // Set status ke "Tidak Dipesan"
@@ -1003,20 +979,21 @@ class User {
             System.out.println(
                     "==================================================================================================");
             System.out.println(
-                    " No  |  Tanggal Pemesanan  |  Jam Pemesanan  |  Jenis Gedung  |  Opsi Pembayaran | Total");
+                    " No  |  Tanggal Pemesanan  |  Jenis Gedung  |  Opsi Pembayaran | Total");
             System.out.println(
                     "==================================================================================================");
 
             // Format output menjadi tabel
             String no = String.format("%3s", "");
             String tanggal = String.format("%18s", bookingInfo[2]);
-            String jam = String.format("%15s", bookingInfo[3]);
             String jenisGedung = String.format("%14s", bookingInfo[0]);
             String opsiPemesanan = String.format("%16s", bookingInfo[1]);
             String hargaGedung = String.format("Rp %.2f", price);
 
-            System.out.println(no + " | " + tanggal + " | " + jam + " | " + jenisGedung + " | " + opsiPemesanan + " | "
+            System.out.println(no + " | " + tanggal + " | " + jenisGedung + " | " + opsiPemesanan + " | "
                     + hargaGedung);
+            System.out.println(
+                    "==================================================================================================");
         } else {
             System.out.println("--------------------------------------------------");
             System.out.println("|                                                |");
@@ -1025,6 +1002,7 @@ class User {
             System.out.println("--------------------------------------------------");
         }
     }
+
 
     public void historyBooking(String[] bookingInfo) {
         for (int i = 0; i < bookingHistory.length; i++) {
@@ -1047,9 +1025,9 @@ class User {
     }
 
     public void viewBookingHistory() {
-        System.out.println("=======================================================================================================================");
-        System.out.println(" No | Tanggal Pemesanan | Jam Pemesanan | Jenis Gedung | Fasilitas | Opsi Pembayaran | Harga Gedung | Status Pembayaran");
-        System.out.println("=======================================================================================================================");
+        System.out.println("======================================================================================");
+        System.out.println(" No | Tanggal Pemesanan | Jenis Gedung | Fasilitas | Opsi Pembayaran | Harga Gedung");
+        System.out.println("======================================================================================");
 
         boolean hasDetails = false;
 
@@ -1058,15 +1036,13 @@ class User {
                 hasDetails = true;
 
                 String no = String.format("%4d", i + 1);
-                String tanggal = String.format("%16s", bookingHistory[i][2]);
-                String jam = String.format("%13s", bookingHistory[i][3]);
+                String tanggal = String.format("%16s", bookingHistory[i][2]);   
                 String jenisGedung = String.format("%12s", bookingHistory[i][0]);
                 String fasilitas = String.format("%12s", bookingHistory[i][6]); // Ambil data fasilitas dari booking history
                 String opsiPemesanan = String.format("%15s", bookingHistory[i][1]);
                 String hargaGedung = String.format("Rp %.2f", Double.parseDouble(bookingHistory[i][4]));
-                String statusPembayaran = bookingHistory[i][5]; // Ambil status pembayaran dari booking history
 
-                System.out.println(no + " | " + tanggal + " | " + jam + " | " + jenisGedung + " | " + fasilitas+ " | " + opsiPemesanan + " | " + hargaGedung + " | " + statusPembayaran);
+                System.out.println(no + " | " + tanggal + " | " + jenisGedung + " | " + fasilitas+ " | " + opsiPemesanan + " | " + hargaGedung);
             }
         }
 
@@ -1077,8 +1053,7 @@ class User {
             System.out.println("|                                              |");
             System.out.println("------------------------------------------------");
         }
-        System.out.println(
-                "=================================================================================================================================");
+        System.out.println("======================================================================================");
     }
 
     public void informasiUser() {
