@@ -15,23 +15,17 @@ public class main {
     private static Map<String, User> userMap = new HashMap<>();
     private Map<String, Boolean> bookedSlots = new HashMap<>();
     private ArrayList<String[]> bookingHistory;
-    private String statusPemesanan;
     private static boolean isLoggedIn = false;
     private static User loggedInUser = null;
+    private String statusKonfirmasi;
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin123";
-    public String getStatusPemesanan(){
-        return this.getStatusPemesanan();
+    public void setStatusKonfirmasi(String status) {
+        this.statusKonfirmasi = status;
     }
-    public void setStatusPemesanan(String statusPemesanan){
-        this.statusPemesanan = statusPemesanan;
-    }
-    
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        
-
         while (true) {
                 if (!isLoggedIn) {
                     System.out.println(
@@ -157,6 +151,7 @@ public class main {
         for (User user : userMap.values()) {
             String username = user.getUsername();
             String statusPemesanan = user.getStatusPemesanan();
+            String statusKonfirmasi = user.getStatusKonfirmasi();
             String tanggalBooking = "Belum memesan";
             String waktuBooking = "";
             String pembayaran = "";
@@ -179,6 +174,7 @@ public class main {
 
         User userToConfirm = userMap.get(usernameToConfirm);
         if (userToConfirm != null && userToConfirm.getStatusPemesanan().equals("Dipesan")) {
+            userToConfirm.setStatusKonfirmasi("Konfirmasi Wir");
             System.out.println("----------------------------------------------------------------------");
             System.out.println("|                                                                    |");
             System.out.println("|    Booking untuk " + usernameToConfirm + " telah dikonfirmasi.    |");
@@ -518,7 +514,8 @@ class User {
     private String password;
     private String[] bookingInfo = new String[5]; // Array untuk menyimpan info pemesanan
     private String[][] bookingHistory;
-    private String statusPemesanan = ""; // Status awal
+    private String statusPemesanan = "Belum pesan"; // Status awal
+    private String statusKonfirmasi = "Belum konfirmasi";
     private String statusBooking = ""; 
     private String statusBook = "";
     private int bookingNumber = 0; // Berikut adalah Nomor pemesanan
@@ -565,10 +562,6 @@ class User {
         this.bookingHistory = new String[10][8];
         this.isCheckedIn = false;
     }
-
-    public void confirmBooking(Scanner scanner) {
-    }
-
     public void lihatTanggal(Scanner scanner) {
     }
 
@@ -577,6 +570,10 @@ class User {
     }
 
     public void setStatusPemesanan(String string) {
+    }
+
+    public void setStatusKonfirmasi(String status){
+        this.statusKonfirmasi = status;
     }
 
     public void setStatusBooking(String string){
@@ -633,6 +630,10 @@ class User {
 
     public String getStatusPemesanan() {
         return statusPemesanan;
+    }
+
+    public String getStatusKonfirmasi(){
+        return statusKonfirmasi;
     }
 
     public String getStatusBooking(){
@@ -891,8 +892,21 @@ class User {
     }
     
     public void checkIn(Scanner scanner) {
-            if(this.getStatusPemesanan().equals("Sudah Dikonfirmasi")){
-                System.out.println("ya");
+            if(this.getStatusKonfirmasi().equals("Konfirmasi Wir")){
+                System.out.println("Pemesanan Anda Sudah Dikonfirmasi");
+                System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
+                System.out.println("| Username   | Status Pemesanan| Tanggal Booking     | Waktu Booking   | Pembayaran    |");
+                System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
+
+                String username = this.getUsername();
+                String statusPemesanan = this.getStatusPemesanan();
+                String tanggalBooking = "Belum memesan";
+                String waktuBooking = "";
+                String pembayaran = "";
+
+                String row = String.format("| %-10s | %-15s | %-19s | %-15s | %-13s |", username, statusPemesanan, tanggalBooking, waktuBooking, pembayaran);
+                System.out.println(row);
+                System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
             } else if (this.getStatusPemesanan().equals("Dipesan")){
                 System.out.println("Pemesanan Anda Belum Dikonfirmasi Oleh Admin");
             } else {
