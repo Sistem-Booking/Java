@@ -23,11 +23,16 @@ public class main {
     public void setStatusKonfirmasi(String status) {
         this.statusKonfirmasi = status;
     }
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
                 if (!isLoggedIn) {
+                    clearScreen();
                     System.out.println(
                             " _    _ _____ _     _____ ________  ___ _____                              ");
                     System.out.println(
@@ -78,30 +83,42 @@ public class main {
         }
 
     public static void changePasswordByUsername(Scanner scanner) {
+        clearScreen();
         boolean passwordChanged = false;
         while (!passwordChanged) {
             System.out.print("Masukkan username yang akan mengganti kata sandi: ");
             String targetUsername = scanner.nextLine();
-
             User targetUser = userMap.get(targetUsername);
             if (targetUser != null) {
                 System.out.print("Masukkan kata sandi baru: ");
                 String newPassword = scanner.nextLine();
                 targetUser.changePassword(newPassword);
-                System.out.println("------------------------------------------------------");
+                clearScreen();
+                System.out.println("-------------------------------------------------------");
                 System.out.println("|                                                     |");
                 System.out.println("|               Kata sandi Berhasil Dirubah           |");
                 System.out.println("|                                                     |");
                 System.out.println("-------------------------------------------------------");
                 passwordChanged = true; // Setel variabel ini ke true setelah berhasil mengubah kata sandi.
             } else {
-                System.out.println("Pengguna dengan username '" + targetUsername + "' tidak ditemukan.");
+                System.out.println("----------------------------------------------------------");
+                System.out.println("");
+                System.out.println("    Pengguna dengan username '" + targetUsername + "' tidak ditemukan.");
+                System.out.println("");
+                System.out.println("----------------------------------------------------------");
+                System.out.println("");
             }
         }
     }
 
     private static void adminMenu(Scanner scanner) {
         while (true) {
+            clearScreen();
+            System.out.println("-----------------------------------------------------");
+            System.out.println("|                                                   |");
+            System.out.println("|                 Admin Dashboard                   |");
+            System.out.println("|                                                   |");
+            System.out.println("-----------------------------------------------------");
             System.out.println("1. Lihat Informasi User Terdaftar");
             System.out.println("2. Cari User");
             System.out.println("3. Lihat Informasi Check-in User");
@@ -143,6 +160,7 @@ public class main {
     }
 
     private static void confirmBooking(Scanner scanner) {
+        clearScreen();
         System.out.println("Konfirmasi Booking:");
         System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
         System.out.println("| Username   | Status Pemesanan| Tanggal Booking     | Waktu Booking   | Pembayaran    |");
@@ -174,7 +192,7 @@ public class main {
 
         User userToConfirm = userMap.get(usernameToConfirm);
         if (userToConfirm != null && userToConfirm.getStatusPemesanan().equals("Dipesan")) {
-            userToConfirm.setStatusKonfirmasi("Konfirmasi Wir");
+            userToConfirm.setStatusKonfirmasi("Konfirmasi");
             System.out.println("----------------------------------------------------------------------");
             System.out.println("|                                                                    |");
             System.out.println("|    Booking untuk " + usernameToConfirm + " telah dikonfirmasi.    |");
@@ -186,10 +204,11 @@ public class main {
     }
 
     private static void viewPemesananInfo() {
+        clearScreen();
         System.out.println("Informasi Check-in User:");
-        System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
-        System.out.println("| Username   | Status Pemesanan| Tanggal Booking     | Waktu Booking   | Pembayaran     |");
-        System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
+        System.out.println("+------------+--------------------+---------------------+-----------------+---------------+");
+        System.out.println("| Username   | Status Pemesanan   | Tanggal Booking     | Waktu Booking   | Pembayaran     |");
+        System.out.println("+------------+--------------------+---------------------+-----------------+---------------+");
 
         for (User user : userMap.values()) {
             String username = user.getUsername();
@@ -230,7 +249,7 @@ public class main {
                 return user1.getNik().compareTo(user2.getNik());
             }
         });
-
+        clearScreen();
         // Display the sorted list of valid users
         System.out.println("===========================================================================");
         System.out.println("                        Daftar Pengguna Terdaftar ");
@@ -257,6 +276,7 @@ public class main {
     }
 
     private static void createAccount(Scanner scanner) {
+        clearScreen();
         System.out.println("------------------------------------------------");
         System.out.println("|                                              |");
         System.out.println("|               Halaman Buat Akun              |");
@@ -353,7 +373,7 @@ public class main {
         if (userCount < users.length) {
             users[userCount] = newUser;
             userCount++;
-
+            clearScreen();
             System.out.println("------------------------------------------------------------------------------");
             System.out.println("|                                                                            |");
             System.out.println("|               Akun berhasil dibuat, anda sekarang sudah login              |");
@@ -375,6 +395,7 @@ public class main {
     }
 
     private static void login(Scanner scanner) {
+        clearScreen();
         System.out.println("-------------------------------------------------");
         System.out.println("|                                               |");
         System.out.println("|               Halaman Masuk                   |");
@@ -401,6 +422,7 @@ public class main {
         } else {
             User foundUser = userMap.get(username);
             if (foundUser != null && foundUser.getPassword().equals(password)) {
+                clearScreen();
                 System.out.println("----------------------------------------------");
                 System.out.println("|                                            |");
                 System.out.println("|               Selamat Datang " + username + " !           |");
@@ -476,11 +498,18 @@ public class main {
     }
 
     private static void searchUser(Scanner scanner) {
+        clearScreen();
+        System.out.println("---------------------------------------------------------");
+        System.out.println("|                                                       |");
+        System.out.println("|                  Search User Dashboard                |");
+        System.out.println("|                                                       |");
+        System.out.println("---------------------------------------------------------");
         System.out.print("Masukkan Username yang ingin Anda cari: ");
         String usernameToSearch = scanner.nextLine();
         User foundUser = userMap.get(usernameToSearch);
 
         if (foundUser != null) {
+            clearScreen();
             System.out.println("===================================================================================");
             System.out.println("                           Informasi User yang Anda Cari");
             System.out.println("===================================================================================");
@@ -516,6 +545,7 @@ class User {
     private String[][] bookingHistory;
     private String statusPemesanan = "Belum pesan"; // Status awal
     private String statusKonfirmasi = "Belum konfirmasi";
+    private String statusAkhir = "";
     private String statusBooking = ""; 
     private String statusBook = "";
     private int bookingNumber = 0; // Berikut adalah Nomor pemesanan
@@ -551,6 +581,11 @@ class User {
     private static Map<String, User> userMap = new HashMap<>();
     User userToCheckIn = userMap.get(username); 
     HashMap<String, String[]> sessionStatus = new HashMap<>();
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
 
     public User(String nik, String username, String dateOfBirth, String phoneNumber, String address, String password) {
         this.nik = nik;
@@ -574,6 +609,10 @@ class User {
 
     public void setStatusKonfirmasi(String status){
         this.statusKonfirmasi = status;
+    }
+
+    public void setStatusAkhir(String status){
+        this.statusAkhir = status;
     }
 
     public void setStatusBooking(String string){
@@ -636,6 +675,10 @@ class User {
         return statusKonfirmasi;
     }
 
+    public String getStatusAkhir(){
+        return statusAkhir;
+    }
+
     public String getStatusBooking(){
         return statusBooking;
     }
@@ -671,6 +714,7 @@ class User {
 
 
     public void pemesananGedung(Scanner scanner) {
+        clearScreen();
         System.out.println("------------------------------------------------");
         System.out.println("|                                              |");
         System.out.println("|               Halaman Pemesanan              |");
@@ -700,6 +744,7 @@ class User {
         if (sessionStatus.containsKey(tanggalBookingString)){
             String[] statusSesi = sessionStatus.get(tanggalBookingString);
             if (statusSesi[sesiPemesanan -  1] != null && !statusSesi[sesiPemesanan - 1].isEmpty()) {
+            clearScreen();
             System.out.println("------------------------------------------------------------------------------------------------------");
             System.out.println("|                                                                                                    |");
             System.out.println("|                 Tanggal dan sesi sudah dibooking silahkan pilih tanggal dan sesi lagi              |");
@@ -717,6 +762,7 @@ class User {
         sessionStatus.put(tanggalBookingString, statusSesi);
 
         if (sesiPemesanan != 1 && sesiPemesanan != 2) {
+            clearScreen();
             System.out.println("-------------------------------------------------------");
             System.out.println("|                                                     |");
             System.out.println("|               Pilihan Sesi Tidak Valid              |");
@@ -854,7 +900,7 @@ class User {
                 bookingInfo[4] = username; // Username disimpan di indeks 4
 
                 historyBooking(bookingInfo);
-
+                clearScreen();
                 System.out.println("------------------------------------------------");
                 System.out.println("|                                              |");
                 System.out.println("|               Pemesanan Berhasil             |");
@@ -863,54 +909,30 @@ class User {
                 statusPemesanan = "Dipesan";
                 bookingNumber++;
             }
-
-    public void tampilkanPemberitahuan(){
-        if(this.statusPemesanan.equals("Sudah Dikonfirmasi")){
-                System.out.println("Pemesanan anda Sudah dikonfirmasi oleh admin");
-                System.out.println("Check-In:");
-                System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
-                System.out.println("| Username   | Status Pemesanan| Tanggal Booking     | Waktu Booking   | Pembayaran    |");
-                System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
-
-                String username = this.getUsername();
-                String statusPemesanan = this.getStatusPemesanan();
-                String tanggalBooking = "Belum memesan";
-                String waktuBooking = "";
-                String pembayaran = "";
-
-                String[] bookingInfo = this.getBookingInfo();
-                if (this.getStatusPemesanan().equals("Dipesan")){
-                    tanggalBooking = bookingInfo[2];
-                    waktuBooking = bookingInfo[3];
-                    pembayaran = bookingInfo[1];
-                }
-
-                String row = String.format("| %-10s | %-15s | %-19s | %-15s | %-13s |", username, statusPemesanan, tanggalBooking, waktuBooking, pembayaran);
-                System.out.println(row);
-                System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
-        }
-    }
     
     public void checkIn(Scanner scanner) {
-            if(this.getStatusKonfirmasi().equals("Konfirmasi Wir")){
+            if(this.getStatusKonfirmasi().equals("Konfirmasi")){
+                clearScreen();
                 System.out.println("Pemesanan Anda Sudah Dikonfirmasi");
-                System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
-                System.out.println("| Username   | Status Pemesanan| Tanggal Booking     | Waktu Booking   | Pembayaran    |");
-                System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
+                System.out.println("+------------+-----------------+---------------------+---------------------+------------------+----------");
+                System.out.println(" Username    | Jenis Gedung    | Fasilitas           | Tanggal Booking     | Opsi Pemesanan   | Harga    ");
+                System.out.println("+------------+-----------------+---------------------+---------------------+------------------+----------");
 
-                String username = this.getUsername();
-                String statusPemesanan = this.getStatusPemesanan();
-                String tanggalBooking = "Belum memesan";
-                String waktuBooking = "";
-                String pembayaran = "";
-
-                String row = String.format("| %-10s | %-15s | %-19s | %-15s | %-13s |", username, statusPemesanan, tanggalBooking, waktuBooking, pembayaran);
-                System.out.println(row);
-                System.out.println("+------------+-----------------+---------------------+-----------------+---------------+");
+                System.out.println("+------------+-----------------+---------------------+---------------------+------------------+-----------");
             } else if (this.getStatusPemesanan().equals("Dipesan")){
-                System.out.println("Pemesanan Anda Belum Dikonfirmasi Oleh Admin");
+                clearScreen();
+                System.out.println("--------------------------------------------------------------");
+                System.out.println("|                                                            |");
+                System.out.println("|               Pemesanan Anda Belum Dikonfirmasi            |");
+                System.out.println("|                                                            |");
+                System.out.println("--------------------------------------------------------------");
             } else {
-                System.out.println("Anda Belum Memesan Gedung");
+                clearScreen();
+                System.out.println("------------------------------------------------");
+                System.out.println("|                                              |");
+                System.out.println("|               Belum ada Pemesanan            |");
+                System.out.println("|                                              |");
+                System.out.println("------------------------------------------------");
             }
         }
 
@@ -929,6 +951,7 @@ class User {
 
     public void akhiriPemesanan(Scanner scanner) {
         if ("Dipesan".equals(statusPemesanan)) {
+            clearScreen();
             System.out.println("------------------------------------------------");
             System.out.println("|                                              |");
             System.out.println("|               Halaman Check-Out              |");
@@ -950,6 +973,8 @@ class User {
                     return;
                 }
             } else if ("Lunas".equals(bookingInfo[1])) {
+                    clearScreen();
+                    setStatusAkhir("Sampun");
                     System.out.println("------------------------------------------------");
                     System.out.println("|                                              |");
                     System.out.println("|               Anda Telah Melunasi            |");
@@ -961,18 +986,18 @@ class User {
             }
 
             // Menampilkan struk detail pemesanan
-            System.out.println("=================================================");
+            System.out.println("+------------+-----------------+------------------+");;
             System.out.println("              Struk Detail Pemesanan");
-            System.out.println("=================================================");
+            System.out.println("+------------+-----------------+------------------+");;
             System.out.println("  Tanggal Pemesanan: " + bookingInfo[2]);
             System.out.println("  Jenis Gedung: " + bookingInfo[0]);
             System.out.println("  Harga Gedung: " + formatToRupiah(price));
             System.out.println("  Opsi Pembayaran: " + bookingInfo[1]);
-            System.out.println("=================================================");
-
+            System.out.println("+------------+-----------------+------------------+");;
             // Kosongkan info pemesanan
             Arrays.fill(bookingInfo, null);
         } else {
+            clearScreen();
             System.out.println("--------------------------------------------------");
             System.out.println("|                                                |");
             System.out.println("|               Belum ada Pemesanan              |");
@@ -983,11 +1008,12 @@ class User {
 
     public void viewBooking() {
         if (bookingInfo[2] != null && bookingInfo[3] != null && bookingInfo[0] != null && bookingInfo[1] != null) {
-            System.out.println("=============================================================================");
+            clearScreen();
+            System.out.println("+------------+-----------------+---------------------+------------------------+");
             System.out.println("                              Informasi Pemesanan");
-            System.out.println("=============================================================================");
+            System.out.println("+------------+-----------------+---------------------+------------------------+");
             System.out.println(" No  |  Tanggal Pemesanan  |  Jenis Gedung  |  Opsi Pembayaran | Total");
-            System.out.println("=============================================================================");
+            System.out.println("+------------+-----------------+---------------------+------------------------+");
 
             // Format output menjadi tabel
             String no = String.format("%3s", "");
@@ -997,8 +1023,9 @@ class User {
             String hargaGedung = String.format("Rp %.2f", price);
 
             System.out.println(no + " | " + tanggal + " | " + jenisGedung + " | " + opsiPemesanan + " | "+ hargaGedung);
-            System.out.println("=============================================================================");
+            System.out.println("+------------+-----------------+---------------------+------------------------+");
         } else {
+            clearScreen();
             System.out.println("--------------------------------------------------");
             System.out.println("|                                                |");
             System.out.println("|               Belum ada Pemesanan              |");
@@ -1029,29 +1056,27 @@ class User {
     }
 
     public void viewBookingHistory() {
-        System.out.println("======================================================================================");
-        System.out.println(" No | Tanggal Pemesanan | Jenis Gedung | Fasilitas | Opsi Pembayaran | Harga Gedung");
-        System.out.println("======================================================================================");
+        if ("Sampun".equals(statusAkhir.trim())) {
+            clearScreen();
+            System.out.println("+------------+-----------------+---------------------+---------------------+------------------+");
+            System.out.println(" No | Tanggal Pemesanan | Jenis Gedung | Fasilitas | Opsi Pembayaran | Harga Gedung");
+            System.out.println("+------------+-----------------+---------------------+---------------------+------------------+");
+            for (int i = 0; i < bookingHistory.length; i++) {
+                if (bookingHistory[i][0] != null) {
+                    // hasDetails = true;
+                    String no = String.format("%4d", i + 1);
+                    String tanggal = String.format("%16s", bookingHistory[i][2]);   
+                    String jenisGedung = String.format("%12s", bookingHistory[i][0]);
+                    String fasilitas = String.format("%12s", bookingHistory[i][6]); // Ambil data fasilitas dari booking history
+                    String opsiPemesanan = String.format("%15s", bookingHistory[i][1]);
+                    String hargaGedung = String.format("Rp %.2f", Double.parseDouble(bookingHistory[i][4]));
 
-        boolean hasDetails = false;
-
-        for (int i = 0; i < bookingHistory.length; i++) {
-            if (bookingHistory[i][0] != null) {
-                hasDetails = true;
-
-                String no = String.format("%4d", i + 1);
-                String tanggal = String.format("%16s", bookingHistory[i][2]);   
-                String jenisGedung = String.format("%12s", bookingHistory[i][0]);
-                String fasilitas = String.format("%12s", bookingHistory[i][6]); // Ambil data fasilitas dari booking history
-                String opsiPemesanan = String.format("%15s", bookingHistory[i][1]);
-                String hargaGedung = String.format("Rp %.2f", Double.parseDouble(bookingHistory[i][4]));
-
-                System.out.println(no + " | " + tanggal + " | " + jenisGedung + " | " + fasilitas+ " | " + opsiPemesanan + " | " + hargaGedung);
+                    System.out.println(no + " | " + tanggal + " | " + jenisGedung + " | " + fasilitas+ " | " + opsiPemesanan + " | " + hargaGedung);
+                }
             }
-        }
-        System.out.println("======================================================================================");
-
-        if (!hasDetails) {
+            System.out.println("+------------+-----------------+---------------------+---------------------+------------------+");
+        } else {
+            clearScreen();
             System.out.println("------------------------------------------------");
             System.out.println("|                                              |");
             System.out.println("|               Belum ada Pemesanan            |");
@@ -1061,11 +1086,12 @@ class User {
     }
 
     public void informasiUser() {
-        System.out.println("============================================================");
+        clearScreen();
+        System.out.println("+------------+-----------------+---------------------+----------+");
         System.out.println("                      Informasi User");
-        System.out.println("============================================================");
+        System.out.println("+------------+-----------------+---------------------+----------+");
         System.out.println("NIK           | Username          | No Telephone | Alamat ");
-        System.out.println("============================================================");
+        System.out.println("+------------+-----------------+---------------------+----------+");
 
         // Format output menjadi tabel
         String nikFormatted = String.format("%-15s", nik);
@@ -1075,30 +1101,6 @@ class User {
 
         System.out.println(
                 nikFormatted + " | " + usernameFormatted + " | " + noTelephoneFormatted + " | " + alamatFormatted);
-        System.out.println("============================================================");
-    }
-
-    public void viewBookingInfo() {
-        for (int i = 0; i < bookingHistory.length; i++) {
-            if (bookingHistory[i][0] != null) {
-                System.out.println("=======================================================================================================");
-                System.out.println( " No  | Tanggal Pemesanan | Jam Pemesanan | Jenis Gedung | Opsi Pembayaran | Harga Gedung | Status");
-                System.out.println("=========================================================================================================");
-                String no = String.format("%4d", i + 1);
-                String tanggal = String.format("%16s", bookingHistory[i][2]);
-                String jam = String.format("%13s", bookingHistory[i][3]);
-                String jenisGedung = String.format("%12s", bookingHistory[i][0]);
-                String opsiPemesanan = String.format("%15s", bookingHistory[i][1]);
-                String hargaGedung = String.format("Rp %.2f", Double.parseDouble(bookingHistory[i][4]));
-                String status = "Belum Dikonfirmasi";
-
-                if ("Lunas".equals(bookingHistory[i][5])) {
-                    status = "Sudah Dikonfirmasi";
-                }
-
-                System.out.println(no + " | " + tanggal + " | " + jam + " | " + jenisGedung + " | " + opsiPemesanan
-                        + " | " + hargaGedung + " | " + status);
-            }
-        }
+        System.out.println("+------------+-----------------+---------------------+----------+");
     }
 }
