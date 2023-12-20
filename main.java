@@ -8,9 +8,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class main {
+class main {
     private static User[] users = new User[100]; // Array untuk menyimpan pengguna
     private static int userCount = 0;
     private static Map<String, User> userMap = new HashMap<>();
@@ -171,12 +173,9 @@ public class main {
         System.out.println("");
         System.out.println("Pilih jenis laporan:");
             System.out.println("1. Cetak laporan semua");
-            System.out.println("2. Cetak laporan berdasarkan jenis gedung");
-            System.out.println("3. Cetak laporan berdasarkan pembayaran lunas");
-            System.out.println("4. Cetak laporan berdasarkan pembayaran DP");
-            System.out.println("5. Cetak laporan berdasarkan jumlah gedung paling banyak dipesan");
-            System.out.println("6. Cetak laporan pendapatan");
-            System.out.println("7. Keluar");
+            System.out.println("2. Cetak laporan berdasarkan pembayaran DP");
+            System.out.println("3. Cetak laporan pendapatan");
+            System.out.println("4. Keluar");
             System.out.print("Masukkan Pilihan Anda : ");
             int pilihan = scanner.nextInt();
 
@@ -185,17 +184,13 @@ public class main {
                 for (User user : userMap.values()) {
                     String [][] bookingHistory = user.getBookingHistory();
                     String statusAkhir = user.getStatusAkhir();
+                    String choicePembayaran = user.getChoicePembayaran();
                     String statusPembayaran = user.getStatusPembayaran();
                     String [] bookingInfo = user.getBookingInfo();
-                    cetakLaporanSemua(scanner,bookingHistory, statusPembayaran, bookingInfo, statusAkhir);
+                    cetakLaporanSemua(scanner,bookingHistory, statusPembayaran, bookingInfo, statusAkhir, choicePembayaran);
                 }
                     break;
-                // case 2:
-                //     System.out.println("Masukkan jenis gedung:");
-                //     String jenisGedung = scanner.next();
-                //     cetakLaporanJenisGedung(jenisGedung);
-                //     break;
-                case 3:
+                case 2:
                 for (User user :  userMap.values()){
                     String [][] bookingHistory = user.getBookingHistory();
                     String statusPembayaran = user.getStatusPembayaran();
@@ -205,16 +200,14 @@ public class main {
                     cetakLaporanPembayaranLunas(scanner,bookingHistory, statusPembayaran, bookingInfo, choicePembayaran, statusAkhir);
                 }
                     break;
-                // case 4:
-                //     cetakLaporanPembayaranDP(pemesanans);
-                //     break;
-                // case 5:
-                //     cetakLaporanJumlahGedung(pemesanans);
-                //     break;
-                // case 6:
-                //     cetakLaporanPendapatan(pemesanans);
-                //     break;
-                case 7:
+                case 3:
+                for (User user : userMap.values()){
+                    String [][] bookingHistory = user.getBookingHistory();
+                    String statusAkhir = user.getStatusAkhir();
+                    cetakLaporanPendapatan(scanner,bookingHistory, statusAkhir);
+                }
+                    break;
+                case 4:
                     ulang = false;
                     break;
                 default:
@@ -224,7 +217,69 @@ public class main {
         }
     }
 
-    private static void cetakLaporanSemua(Scanner scanner,String[][] bookingHistory, String statusPembayaran, String [] bookingInfo, String statusAkhir){
+    private static String formatToRupiah(double harga) {
+        Locale localeID = Locale.forLanguageTag("id-ID");
+        NumberFormat formatRupiah = NumberFormat.getCurrencyInstance(localeID);
+        return formatRupiah.format(harga);
+    }
+    
+    private static void cetakLaporanPendapatan(Scanner scanner, String[][] bookingHistory, String statusAkhir) {
+        clearScreen();
+        if ("Berakhir".equals(statusAkhir)) {
+            System.out.println("");
+            System.out.println("---------------------------------------------------------");
+            System.out.println("|                                                       |");
+            System.out.println("|                       Detail Laporan                   |");
+            System.out.println("|                                                       |");
+            System.out.println("---------------------------------------------------------");
+            System.out.println("");
+            double totalHarga = 0;
+            for (User user : userMap.values()) {
+                for (int i = 0; i < bookingHistory.length; i++) {
+                    if (bookingHistory[i][0] != null) {
+                        String username = user.getUsername();  // Ambil username dari bookingHistory
+                        String jenisGedung = bookingHistory[i][1]; // Ambil jenis gedung dari bookingHistory
+                        double hargaGedung = Double.parseDouble(bookingHistory[i][4]);
+                        String formattedHargaGedung = formatToRupiah(hargaGedung);
+                        totalHarga += hargaGedung;
+                        System.out.println("------+---------+-------+");
+                        System.out.println("");
+                        System.out.println(" Username       : " + username);
+                        System.out.println(" Jenis Gedung   : " + jenisGedung); // Menambahkan jenis gedung
+                        System.out.println(" Harga          : " + formattedHargaGedung);
+                        System.out.println("");
+                        System.out.println("------+---------+-------+");
+                        System.out.println("");
+                    }
+                }
+            }
+            String formattedTotalHarga = formatToRupiah(totalHarga);
+            System.out.println("");
+            System.out.println("------+---------+-------+--------+------+");
+            System.out.println("");
+            System.out.println("Total Pendapatan : " + formattedTotalHarga);
+            System.out.println("");
+            System.out.println("------+---------+-------+--------+------+");
+            System.out.println("");
+            System.out.print("0. Kembali : ");
+            int kembali = scanner.nextInt();
+    
+            switch (kembali) {
+                case 0:
+                    cetakLaporan(scanner);
+            }
+        } else {
+            clearScreen();
+            System.out.println("-------------------------------------------------------------");
+            System.out.println("|                                                           |");
+            System.out.println("|               Tidak Ada Laporan Yang Dicetak              |");
+            System.out.println("|                                                           |");
+            System.out.println("-------------------------------------------------------------");
+        }
+    }
+    
+
+    private static void cetakLaporanSemua(Scanner scanner,String[][] bookingHistory, String statusPembayaran, String [] bookingInfo, String statusAkhir, String choicePembayaran ){
         if ("Berakhir".equals(statusAkhir)){
             clearScreen();
             System.out.println("-------------------------------------------------------------");
@@ -241,7 +296,7 @@ public class main {
                             String tanggalBooking = bookingHistory[i][2];
                             String jenisGedung = bookingHistory[i][0];
                             String fasilitas = bookingInfo[5];
-                            String opsiPembayaran = bookingHistory[i][1];
+                            String opsiPembayaran = user.getChoicePembayaran();
                             System.out.println("");
                             System.out.println(" ."+nomorPemesanan);
                             System.out.println("\t\tusername        : " + username);
@@ -287,23 +342,27 @@ public class main {
     
                 int nomorPemesanan = 1;
                 for (User user : userMap.values()) {
-                    String username = user.getUsername();
-                    String tanggalBooking = bookingInfo[2];
-                    String jenisGedung = bookingInfo[0];
-                    String fasilitas = bookingInfo[5];
-                    String opsiPembayaran = user.getChoicePembayaran();
-    
-                    System.out.println("");
-                    System.out.println(" ." + nomorPemesanan);
-                    System.out.println("\t\tusername        : " + username);
-                    System.out.println("\t\tTanggal Booking : " + tanggalBooking);
-                    System.out.println("\t\tJenis Gedung    : " + jenisGedung);
-                    System.out.println("\t\tFasilitas       : " + fasilitas);
-                    System.out.println("\t\tOpsi Pembayaran : " + opsiPembayaran);
-                    System.out.println("");
-                    System.out.println("-------------------------------------------------------------"); 
-    
-                    nomorPemesanan += 1;
+                    for (int i = 0; i < bookingHistory.length; i++){
+                        if (bookingHistory[i][0] != null){
+                            String username = user.getUsername();
+                            String tanggalBooking = bookingHistory[i][2];
+                            String jenisGedung = bookingHistory[i][0];
+                            String fasilitas = bookingInfo[5];
+                            String opsiPembayaran = user.getChoicePembayaran();
+            
+                            System.out.println("");
+                            System.out.println(" ." + nomorPemesanan);
+                            System.out.println("\t\tusername        : " + username);
+                            System.out.println("\t\tTanggal Booking : " + tanggalBooking);
+                            System.out.println("\t\tJenis Gedung    : " + jenisGedung);
+                            System.out.println("\t\tFasilitas       : " + fasilitas);
+                            System.out.println("\t\tOpsi Pembayaran : " + opsiPembayaran);
+                            System.out.println("");
+                            System.out.println("-------------------------------------------------------------"); 
+            
+                            nomorPemesanan += 1;
+                        }
+                    }
                 }
                 
                 System.out.println("");
@@ -729,6 +788,7 @@ class User {
     private String[][] bookingHistory;
     private String statusPemesanan = "Belum pesan"; // Status awal
     private String statusKonfirmasi = "Belum konfirmasi";
+    private String statusTanggal = "";
     private String statusAkhir = "";
     private String statusBooking = ""; 
     private String statusBook = "";
@@ -737,17 +797,17 @@ class User {
     private double price;
     private String statusPembayaran = "Belum Lunas";
     private static final double HARGA_PERNIKAHAN = 1500000.0;
-    private static final double HARGA_OLAH_RAGA = 1200000.0;
-    private static final double HARGA_RAPAT = 1000000.0;
-    private static final double HARGA_PHOTOBOOTH = 130000.0;
-    private static final double HARGA_BAND_LIVE = 200000.0;
-    private static final double HARGA_API_BUNGA = 250000.0;
-    private static final double HARGA_KATERING = 1200000.0;
-    private static final double HARGA_PAPAN_SKOR = 300000.0;
-    private static final double HARGA_LAYANAN_FOTOGRAFI = 250000.0;
-    private static final double HARGA_PROYEKTOR = 150000.0;
-    private static final double HARGA_KATERING_RAPAT = 1500000.0;
-    private static final double HARGA_KONFERENSI_TELEPHONE = 150000.0;
+    private static final double HARGA_OLAH_RAGA = 1500000.0;
+    private static final double HARGA_RAPAT = 1500000.0;
+    private static final double HARGA_PHOTOBOOTH = 100000.0;
+    private static final double HARGA_BAND_LIVE = 100000.0;
+    private static final double HARGA_API_BUNGA = 100000.0;
+    private static final double HARGA_KATERING = 100000.0;
+    private static final double HARGA_PAPAN_SKOR = 100000.0;
+    private static final double HARGA_LAYANAN_FOTOGRAFI = 100000.0;
+    private static final double HARGA_PROYEKTOR = 100000.0;
+    private static final double HARGA_KATERING_RAPAT = 100000.0;
+    private static final double HARGA_KONFERENSI_TELEPHONE = 100000.0;
     private boolean isCheckedIn;
     private String tanggalBooking;
     private String waktuBooking;
@@ -761,6 +821,7 @@ class User {
     private User loggedInUser;
     private String bookedDate = "";
     private String bookedSession = "";
+    private Date parsedTanggal;
     private String[] sesi = {"09:00 - 15:00", "16:00 - 22-00"};
     ArrayList<String> bookedDates = new ArrayList<>();
     ArrayList<String> bookedSessions = new ArrayList<>();
@@ -812,6 +873,10 @@ class User {
 
     public void setChoicePembayaran(String status){
         this.choicePembayaran = status;
+    }
+
+    public void setStatusTanggal(String status){
+        this.statusTanggal = status;
     }
 
     public void setStatusBooking(String string){
@@ -914,6 +979,10 @@ class User {
         return choicePembayaran;
     }   
 
+    public String getStatusTanggal(){
+        return statusTanggal;
+    }
+
     public void changePassword(String newPassword) {
         this.password = newPassword;
     }
@@ -927,6 +996,14 @@ class User {
         return isCheckedIn;
     }
 
+    public void parseTanggal(String tanggalString) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("DD-MM-YYYY");
+        this.parsedTanggal = dateFormat.parse(tanggalString);
+    }
+
+    public Date getParsedTanggal(){
+        return parsedTanggal;
+    }
 
     public void pemesananGedung(Scanner scanner) {
         clearScreen();
@@ -936,15 +1013,23 @@ class User {
         System.out.println("|                                              |");
         System.out.println("------------------------------------------------");
         String tanggalBookingString = "";
-        String waktuBookingString = "";
-        
+
         int sesiPemesanan = 0;
 
         // Inisialisasi bookingInfo
         this.bookingInfo = new String[10];
         // Input tanggal
         System.out.print("Masukkan Tanggal (Format: DD-MM-YYYY): ");
+        setStatusTanggal("tanggal");
         tanggalBookingString = scanner.nextLine();
+
+        // Memanggil fungsi untuk mengatur tanggal
+        try {
+            parseTanggal(tanggalBookingString);
+        } catch (ParseException e) {
+            System.out.println("Format tanggal tidak valid. Silakan coba lagi.");
+            e.printStackTrace();
+        }
 
         if (!tanggalBookingString.matches("\\d{2}-\\d{2}-\\d{4}")) {
             System.out.println("\u001B[31mMasukkan input tanggal dengan format yang benar (contoh: 01-01-2023).\u001B[0m");
@@ -1085,8 +1170,11 @@ class User {
                             System.out.println("Pilihan Gedung tidak valid.");
                             return;
                     }
-
+                System.out.println("-------------------------------------");
+                System.out.println("");
                 System.out.println("Total Harga: " + formatToRupiah(price));
+                System.out.println("");
+                System.out.println("-------------------------------------");
                 System.out.println("Pilih Opsi Pembayaran:");
                 System.out.println("1. DP");
                 System.out.println("2. Lunas");
@@ -1121,18 +1209,25 @@ class User {
             }
     
     public void checkIn(Scanner scanner) {
-            if(this.getStatusKonfirmasi().equals("Konfirmasi")){
+            if(this.getStatusKonfirmasi().equals("Konfirmasix")){
                 clearScreen();
                 System.out.println("----------------------------------------------------------------------");
                 System.out.println("|                                                                    |");
                 System.out.println("|                  Pemesanan Anda Sudah Dikonfirmasi !!              |");
                 System.out.println("|                                                                    |");
                 System.out.println("----------------------------------------------------------------------");
-                System.out.println("+------------+-----------------+---------------------+---------------------+------------------+----------");
+                System.out.println("+------------+-----------------+---------------------+---------------------+------------------+----------------+    ");
                 System.out.println(" Username    | Jenis Gedung    | Fasilitas           | Tanggal Booking     | Opsi Pemesanan   | Harga    ");
-                System.out.println("+------------+-----------------+---------------------+---------------------+------------------+----------");
+                System.out.println("+------------+-----------------+---------------------+---------------------+------------------+----------------+    ");
+                String usernameFormatted = String.format("%12s", username);
+                String jenisGedung = String.format("%15s", bookingInfo[0]);
+                String fasilitas = String.format("%19s", bookingInfo[5]);
+                String tanggal = String.format("%19s", bookingInfo[2]);
+                String opsiPemesanan = String.format("%16s", bookingInfo[1]);
+                String hargaGedung = String.format("Rp %.2f", formatToRupiah(price));
 
-                System.out.println("+------------+-----------------+---------------------+---------------------+------------------+-----------");
+                System.out.println(usernameFormatted + " | " + jenisGedung + " | " + fasilitas + " | " + tanggal + " | " + opsiPemesanan + " | " + hargaGedung);
+                System.out.println("+------------+-----------------+---------------------+---------------------+------------------+----------------+    ");
             } else if (this.getStatusPemesanan().equals("Dipesan")){
                 clearScreen();
                 System.out.println("--------------------------------------------------------------");
@@ -1181,8 +1276,8 @@ class User {
                     statusPembayaran = "Lunas";
                     bookingInfo[1] = "Lunas"; // Juga perlu memperbarui status pembayaran di informasi pemesanan
                     System.out.println("Pembayaran berhasil dilunasi.");
-                    setChoicePembayaran("DP");
                     setStatusAkhir("Berakhir");
+                    setChoicePembayaran("DP");
                 } else {
                     System.out.println("Pembayaran DP masih belum dilunasi.");
                     return;
@@ -1224,7 +1319,7 @@ class User {
     }
 
     public void viewBooking() {
-        if (bookingInfo[2] != null && bookingInfo[3] != null && bookingInfo[0] != null && bookingInfo[1] != null) {
+        if ("Dipesan".equals(statusPemesanan.trim())) {
             clearScreen();
             System.out.println("----------------------------------------------------------------------------------");
             System.out.println("|                                                                                |");
@@ -1235,7 +1330,7 @@ class User {
             System.out.println("+------------+-----------------+---------------------+------------------------+");
             System.out.println("                                     Informasi");
             System.out.println("+------------+-----------------+---------------------+------------------------+");
-            System.out.println(" No  |  Tanggal Pemesanan  |  Jenis Gedung  |  Opsi Pembayaran | Total");
+            System.out.println(" No  |  Tanggal Pemesanan  |  Jenis Gedung  |  Opsi Pembayaran | Harga Gedung |");
             System.out.println("+------------+-----------------+---------------------+------------------------+");
             // Format output menjadi tabel
             String no = String.format("%3s", "");
