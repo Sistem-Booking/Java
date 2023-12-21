@@ -22,6 +22,17 @@ class main {
     private String statusKonfirmasi;
     private static final String ADMIN_USERNAME = "admin";
     private static final String ADMIN_PASSWORD = "admin123";
+    private List<String> tanggapanList;
+
+    // Metode untuk menambahkan tanggapan ke array
+    public void addTanggapan(String tanggapan) {
+        this.tanggapanList.add(tanggapan);
+    }
+
+    // Metode untuk mendapatkan daftar tanggapan
+    public List<String> getTanggapanList() {
+        return this.tanggapanList;
+    }
 
     public void setStatusKonfirmasi(String status) {
         this.statusKonfirmasi = status;
@@ -130,7 +141,9 @@ class main {
             System.out.println("3. Lihat Informasi Check-in User");
             System.out.println("4. Konfirmasi Booking");
             System.out.println("5. Cetak Laporan");
-            System.out.println("6. Keluar Sebagai Admin");
+            System.out.println("6. Laporan");
+            System.out.println("7. Tambahkan Kode Voucher");
+            System.out.println("8. Keluar Sebagai Admin");
             System.out.print("Masukkan Pilihan Anda: ");
             int adminChoice = scanner.nextInt();
             scanner.nextLine();
@@ -155,6 +168,12 @@ class main {
                     cetakLaporan(scanner);
                     break;
                 case 6:
+                    tanggapiLaporan(scanner);
+                    break;
+                case 7:
+                    voucher(scanner);
+                    break;
+                case 8:
                     System.out.println("-----------------------------------------------------");
                     System.out.println("|                                                   |");
                     System.out.println("|               Anda Keluar Sebagai Admin           |");
@@ -171,6 +190,47 @@ class main {
             }
         }
     }
+
+    private static void tanggapiLaporan(Scanner scanner) {
+        String statusLaporan = "Ada Laporan"; // Declare statusLaporan
+        if ("Ada Laporan".equals(statusLaporan)) {
+            clearScreen();
+            System.out.println("-------------------------------------------------------------");
+            System.out.println("|                                                           |");
+            System.out.println("|                   Halaman Menanggapi Laporan              |");
+            System.out.println("|                                                           |");
+            System.out.println("-------------------------------------------------------------");
+            for (User user : userMap.values()) {
+                String username = user.getUsername();
+                String userStatusLaporan = user.getStatusLaporan(); // Use user.getStatusLaporan() here
+                String laporan = "Belum ada laporan";
+                String[] bookingInfo = user.getBookingInfo();
+                if (userStatusLaporan.equals("Ada Laporan")) {
+                    laporan = bookingInfo[9];
+                }
+                System.out.println("--------------------------");
+                System.out.println("");
+                System.out.println("Username    : " + username);
+                System.out.println("Laporan     : " + laporan);
+                System.out.println("");
+                System.out.println("--------------------------");
+            }
+            System.out.print("Masukkan username pengguna yang ingin dikonfirmasi : ");
+            String usernameToConfirm = scanner.nextLine();
+    
+            User userToConfirm = userMap.get(usernameToConfirm);
+            if (userToConfirm != null && userToConfirm.getStatusLaporan().equals("Ada Laporan")) {
+                System.out.println("Masukkan tanggapan anda : ");
+                String tanggapan = scanner.nextLine();
+                User.setTanggapan(tanggapan);
+                userToConfirm.setStatusLaporan("Sudah Ditanggapi");
+                System.out.println("Laporan sudah dikirim");
+            } else {
+                System.out.println("Pengguna tidak ditemukan atau tidak memenuhi syarat untuk dikonfirmasi.");
+            }
+        }
+    }
+    
 
     private static void cetakLaporan(Scanner scanner) {
         clearScreen();
@@ -823,14 +883,16 @@ class User {
     private String phoneNumber;
     private String address;
     private String password;
-    private String[] bookingInfo = new String[5]; // Array untuk menyimpan info pemesanan
+    private String[] bookingInfo = new String[100]; // Array untuk menyimpan info pemesanan
     private String[][] bookingHistory;
     private String statusPemesanan = "Belum pesan"; // Status awal
     private String statusKonfirmasi = "Belum konfirmasi";
+    private String statusLaporan = "";
     private String statusTanggal = "";
     private String statusAkhir = "";
     private String statusBooking = "";
     private String statusBook = "";
+    private static String tanggapan;
     private String choicePembayaran = "";
     private int bookingNumber = 0; // Berikut adalah Nomor pemesanan
     private double price;
@@ -885,6 +947,14 @@ class User {
         this.isCheckedIn = false;
     }
 
+    public static void setTanggapan(String newTanggapan) {
+        tanggapan = newTanggapan;
+    }
+
+    public static String getTanggapan() {
+        return tanggapan;
+    }
+
     public void lihatTanggal(Scanner scanner) {
     }
 
@@ -901,6 +971,10 @@ class User {
     }
 
     public void setStatusPemesanan(String string) {
+    }
+
+    public void setStatusLaporan(String status) {
+        this.statusLaporan = status;
     }
 
     public void setStatusKonfirmasi(String status) {
@@ -1021,6 +1095,10 @@ class User {
 
     public String getStatusTanggal() {
         return statusTanggal;
+    }
+
+    public String getStatusLaporan(){
+        return statusLaporan;
     }
 
     public void changePassword(String newPassword) {
@@ -1449,6 +1527,7 @@ class User {
                 bookingHistory[i][6] = bookingInfo[5];
                 bookingHistory[i][7] = bookingInfo[7];
                 bookingHistory[i][8] = bookingInfo[8];
+                bookingHistory[i][9] = bookingInfo[9];
                 break;
             }
         }
@@ -1611,33 +1690,67 @@ class User {
     
         switch (pilihKendala) {
             case 1:
-                clearScreen();
-                System.out.println("-----------------------------------------------------");
-                System.out.println("|                                                   |");
-                System.out.println("|                Lapor Kendala Anda                 |");
-                System.out.println("|                                                   |");
-                System.out.println("-----------------------------------------------------");
-                scanner.nextLine();
-                System.out.print("Tulis kendala anda: ");
-                kendala = scanner.nextLine();
-                while (kendala.trim().isEmpty()){
-                    System.out.println((char) 27 + "[01;31m Laporan tidak boleh kosong" + (char) 27+ "[00;00m");
-                    System.out.print("Tulis kendala anda : ");
-                    kendala = scanner.nextLine();
-                }
-                System.out.println("--------------------------------------------------------------------------------");
-                System.out.println("|                                                                              |");
-                System.out.println("|           Kendala berhasil dilaporkan tunggu balasan dari admin !            |");
-                System.out.println("|                                                                              |");
-                System.out.println("--------------------------------------------------------------------------------");
+                buatLaporan(scanner);
                 break;
             case 2:
+                lihatLaporan();
+                break;
             case 0:
                 clearScreen();
                 return;
             default:
                 break;
         }
+    }
+
+    public void buatLaporan(Scanner scanner){
+            String kendala; // Declare the variable
+            clearScreen();
+            System.out.println("-----------------------------------------------------");
+            System.out.println("|                                                   |");
+            System.out.println("|                Lapor Kendala Anda                 |");
+            System.out.println("|                                                   |");
+            System.out.println("-----------------------------------------------------");
+            scanner.nextLine();
+            System.out.print("Tulis kendala anda: ");
+            kendala = scanner.nextLine();
+            while (kendala.trim().isEmpty()){
+                System.out.println((char) 27 + "[01;31m Laporan tidak boleh kosong" + (char) 27+ "[00;00m");
+                System.out.print("Tulis kendala anda : ");
+                kendala = scanner.nextLine();
+            addLaporan(kendala);
+            setStatusLaporan("Ada Laporan");
+            System.out.println("--------------------------------------------------------------------------------");
+            System.out.println("|                                                                              |");
+            System.out.println("|           Kendala berhasil dilaporkan tunggu balasan dari admin !            |");
+            System.out.println("|                                                                              |");
+            System.out.println("--------------------------------------------------------------------------------");
+        }
+    }
+
+    public void lihatLaporan(){
+        if (this.getStatusLaporan().equals("Sudah Ditanggapi")){
+            clearScreen();
+            String tanggapan = getTanggapan();
+            System.out.println("Ini tanggapannya : " + tanggapan); 
+        } else if(this.getStatusLaporan().equals("Ada Laporan")){
+            clearScreen();
+            System.out.println("--------------------------------------------------------------------------------");
+            System.out.println("|                                                                              |");
+            System.out.println("|                   Laporan Belum Di Tanggapi Oleh Admin                       |");
+            System.out.println("|                                                                              |");
+            System.out.println("--------------------------------------------------------------------------------");
+        } else {
+            System.out.println("anu");
+        }
+    }
+
+    public void addLaporan(String kendala){
+        if (bookingInfo == null){
+            bookingInfo = new String [15];
+        }
+        bookingInfo[9] = kendala;
+        historyBooking(bookingInfo);
     }
     
     public void keluar() {
