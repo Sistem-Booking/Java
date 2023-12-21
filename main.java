@@ -90,14 +90,21 @@ class main {
         clearScreen();
         boolean passwordChanged = false;
         while (!passwordChanged) {
+            System.out.println("-----------------------------------------------------");
+            System.out.println("|                                                   |");
+            System.out.println("|               Halaman Ganti Password              |");
+            System.out.println("|                                                   |");
+            System.out.println("-----------------------------------------------------");
             System.out.print("Masukkan username yang akan mengganti kata sandi: ");
             String targetUsername = scanner.nextLine();
             User targetUser = userMap.get(targetUsername);
             if (targetUser != null) {
+                System.out.println("");
                 System.out.print("Masukkan kata sandi baru: ");
                 String newPassword = scanner.nextLine();
                 targetUser.changePassword(newPassword);
                 clearScreen();
+                System.out.println("");
                 System.out.println("-------------------------------------------------------");
                 System.out.println("|                                                     |");
                 System.out.println("|               Kata sandi Berhasil Dirubah           |");
@@ -107,7 +114,7 @@ class main {
             } else {
                 System.out.println("----------------------------------------------------------");
                 System.out.println("");
-                System.out.println("    Pengguna dengan username '" + targetUsername + "' tidak ditemukan.");
+                System.out.println("               Pengguna tidak dapat ditemukan.");
                 System.out.println("");
                 System.out.println("----------------------------------------------------------");
                 System.out.println("");
@@ -454,7 +461,7 @@ class main {
             userToConfirm.setStatusKonfirmasi("Konfirmasi");
             System.out.println("----------------------------------------------------------------------");
             System.out.println("|                                                                    |");
-            System.out.println("|    Booking untuk " + usernameToConfirm + " telah dikonfirmasi.    |");
+            System.out.println("|                       Booking untuk " + usernameToConfirm + " telah dikonfirmasi.    |");
             System.out.println("|                                                                    |");
             System.out.println("----------------------------------------------------------------------");
             System.out.println("");
@@ -673,8 +680,7 @@ class main {
             clearScreen();
             System.out.println("---------------------------------------------");
             System.out.println("");
-            System.out.println(
-                    (char) 27 + "[01;31mUsername dan password harus diisi. Coba lagi." + (char) 27 + "[00;00m");
+            System.out.println((char) 27 + "[01;31mUsername dan password harus diisi. Coba lagi." + (char) 27 + "[00;00m");
             System.out.println("");
             System.out.println("---------------------------------------------");
         } else if (username.equals(ADMIN_USERNAME) && password.equals(ADMIN_PASSWORD)) {
@@ -691,7 +697,7 @@ class main {
                 clearScreen();
                 System.out.println("----------------------------------------------");
                 System.out.println("|                                            |");
-                System.out.println("|               Selamat Datang " + username + " !           |");
+                System.out.println("|            Selamat Datang " + username + " !       |");
                 System.out.println("|                                            |");
                 System.out.println("----------------------------------------------");
                 loggedInUser = foundUser;
@@ -705,8 +711,7 @@ class main {
                 clearScreen();
                 System.out.println("-------------------------------------------------------");
                 System.out.println("");
-                System.out.println((char) 27 + "[01;31mLogin gagal. Username atau password salah. Coba lagi."
-                        + (char) 27 + "[00;00m");
+                System.out.println((char) 27 + "[01;31mLogin gagal. Username atau password salah. Coba lagi."+ (char) 27 + "[00;00m");
                 System.out.println("");
                 System.out.println("-------------------------------------------------------");
             }
@@ -714,7 +719,6 @@ class main {
     }
 
     private static void userMenu(Scanner scanner) {
-        clearScreen();
         while (true) {
             System.out.println("");
             System.out.println("1. Pemesanan Gedung");
@@ -749,7 +753,7 @@ class main {
                     loggedInUser.viewBookingHistory();
                     break;
                 case 7:
-                    loggedInUser.lapor(scanner);
+                    loggedInUser.lapor();
                     break;
                 case 8:
                     System.out.println("-------------------------------------------------------");
@@ -1057,20 +1061,10 @@ class User {
         this.bookingInfo = new String[15];
         // Input tanggal
         System.out.print("Masukkan Tanggal (Format: DD-MM-YYYY): ");
-        setStatusTanggal("tanggal");
         tanggalBookingString = scanner.nextLine();
 
-        // Memanggil fungsi untuk mengatur tanggal
-        try {
-            parseTanggal(tanggalBookingString);
-        } catch (ParseException e) {
-            System.out.println("Format tanggal tidak valid. Silakan coba lagi.");
-            e.printStackTrace();
-        }
-
         if (!tanggalBookingString.matches("\\d{2}-\\d{2}-\\d{4}")) {
-            System.out.println(
-                    "\u001B[31mMasukkan input tanggal dengan format yang benar (contoh: 01-01-2023).\u001B[0m");
+            System.out.println( "\u001B[31mMasukkan input tanggal dengan format yang benar (contoh: 01-01-2023).\u001B[0m");
             return;
         }
         System.out.println("Pilih Sesi Pemesanan:");
@@ -1259,23 +1253,26 @@ class User {
             System.out.println("|                  Pemesanan Anda Sudah Dikonfirmasi !!              |");
             System.out.println("|                                                                    |");
             System.out.println("----------------------------------------------------------------------");
-            System.out.println(
-                    "+------------+-----------------+---------------------+---------------------+------------------+----------------+    ");
-            System.out.println(
-                    " Username    | Jenis Gedung    | Fasilitas           | Tanggal Booking     | Opsi Pemesanan   | Harga    ");
-            System.out.println(
-                    "+------------+-----------------+---------------------+---------------------+------------------+----------------+    ");
-            String usernameFormatted = String.format("%12s", username);
-            String jenisGedung = String.format("%15s", bookingInfo[0]);
-            String fasilitas = String.format("%19s", bookingInfo[5]);
-            String tanggal = String.format("%19s", bookingInfo[2]);
-            String opsiPemesanan = String.format("%16s", bookingInfo[1]);
-            String hargaGedung = String.format("Rp %.2f", formatToRupiah(price));
+            System.out.println("+------------+-----------------+---------------------+------------------------+");
+            System.out.println("  No |  Tanggal Pemesanan  |  Jenis Gedung  |  Opsi Pembayaran | Harga Gedung |");
+            System.out.println("+------------+-----------------+---------------------+------------------------+");
+            // Format output menjadi tabel
+            for (int i = 0; i < bookingHistory.length; i++) {
+                if (bookingHistory[i][0] != null) {
+                    String no = String.format("%3.1s ", i + 1);
+                    String tanggal = String.format("%14s     ", bookingInfo[2]);
+                    String jenisGedung = String.format("%12s  ", bookingInfo[0]);
+                    String opsiPemesanan = String.format("%11s     ", bookingInfo[1]);
+                    String hargaGedung = String.format("Rp %.2f", price);
 
-            System.out.println(usernameFormatted + " | " + jenisGedung + " | " + fasilitas + " | " + tanggal + " | "
-                    + opsiPemesanan + " | " + hargaGedung);
-            System.out.println(
-                    "+------------+-----------------+---------------------+---------------------+------------------+----------------+    ");
+                    System.out.println(no + " | " + tanggal + " | " + jenisGedung + " | " + opsiPemesanan + " | "
+                            + hargaGedung + "|");
+                    System.out
+                            .println("+------------+-----------------+---------------------+------------------------+");
+                    System.out.println("");
+                    keluar();
+                }
+            }
         } else if (this.getStatusPemesanan().equals("Dipesan")) {
             clearScreen();
             System.out.println("--------------------------------------------------------------");
@@ -1315,7 +1312,7 @@ class User {
             System.out.println("|                                              |");
             System.out.println("------------------------------------------------");
             if ("DP".equals(bookingInfo[1])) {
-                System.out.println("Anda telah memilih pembayaran DP saat check-in. Anda harus melunasi sekarang.");
+                System.out.println("Anda telah memilih pembayaran DP saat memesan, dan anda harus melunasi jika ingin check-out.");
                 System.out.print("1. Lunas: ");
                 int paymentChoice = scanner.nextInt();
                 scanner.nextLine();
@@ -1344,7 +1341,11 @@ class User {
                 System.out.println("|                                              |");
                 System.out.println("------------------------------------------------");
             } else {
-                System.out.println("Pilihan pembayaran tidak valid.");
+                System.out.println("--------------------------------------------------");
+                System.out.println("|                                                |");
+                System.out.println("|               Belum ada Pemesanan              |");
+                System.out.println("|                                                |");
+                System.out.println("--------------------------------------------------");
                 return;
             }
 
@@ -1367,6 +1368,12 @@ class User {
             System.out.print("Berikan Ulasan : ");
             String ulasan = scanner.nextLine();
             addRatingAndUlasan(rating, ulasan);
+            System.out.println("");
+            System.out.println("-----------------------------------------------------------");
+            System.out.println("|                                                         |");
+            System.out.println("|               Terima Kasih Telah Memesan !              |");
+            System.out.println("|                                                         |");
+            System.out.println("-----------------------------------------------------------");
 
             // Kosongkan info pemesanan
             Arrays.fill(bookingInfo, null);
@@ -1456,11 +1463,9 @@ class User {
             System.out.println("|                                                                                |");
             System.out.println("----------------------------------------------------------------------------------");
             System.out.println("");
-            System.out.println(
-                    "+------------+-----------------+---------------------+---------------------+------------------+");
+            System.out.println("+------------+-----------------+---------------------+---------------------+------------------+");
             System.out.println(" No | Tanggal Pemesanan | Jenis Gedung | Fasilitas  | Opsi Pembayaran | Harga Gedung");
-            System.out.println(
-                    "+------------+-----------------+---------------------+---------------------+------------------+");
+            System.out.println("+------------+-----------------+---------------------+---------------------+------------------+");
             for (int i = 0; i < bookingHistory.length; i++) {
                 if (bookingHistory[i][0] != null) {
                     // hasDetails = true;
@@ -1474,8 +1479,7 @@ class User {
                             + opsiPemesanan + " | " + hargaGedung);
                 }
             }
-            System.out.println(
-                    "+------------+-----------------+---------------------+---------------------+------------------+");
+            System.out.println("+------------+-----------------+---------------------+---------------------+------------------+");
             System.out.println("");
             keluar();
         } else {
@@ -1511,11 +1515,10 @@ class User {
         String usernameFormatted = String.format("%-19s", username);
         String alamatFormatted = String.format("%-12s", address);
         String noTelephoneFormatted = String.format("%-13s", phoneNumber);
+        String tanggalLahirFormatted = String.format("%-12s", dateOfBirth);
 
-        System.out.println(
-                nikFormatted + " | " + usernameFormatted + " | " + noTelephoneFormatted + " | " + alamatFormatted);
-        System.out
-                .println("+------------+-----------------+---------------------+-----------------+-------------------");
+        System.out.println(nikFormatted + " | " + usernameFormatted + " | " + tanggalLahirFormatted +  " | "  + alamatFormatted + " | " + noTelephoneFormatted );
+        System.out.println("+------------+-----------------+---------------------+-----------------+-------------------");
         System.out.println("");
         editinfo();
     }
@@ -1530,66 +1533,53 @@ class User {
         System.out.println("------------------------------------------------");
 
         System.out.println("1. NIK");
-        System.out.println("2. Username");
-        System.out.println("3. Alamat");
-        System.out.println("4. Nomor Telephone");
-        System.out.println("5. Tanggal Lahir");
+        System.out.println("2. Alamat");
+        System.out.println("3. Nomor Telephone");
+        System.out.println("4. Tanggal Lahir");
         System.out.println("0. Keluar");
         System.out.print("Pilihan Anda: ");
         pilihEdit = scanner.nextInt();
 
         switch (pilihEdit) {
             case 1:
+                scanner.nextLine();
                 System.out.print("Masukkan NIK baru: ");
-                nik = scanner.next();
+                nik = scanner.nextLine();
+                while (nik.trim().isEmpty()){
+                    System.out.println((char) 27 + "[01;31m Nik tidak boleh kosong" + (char) 27+ "[00;00m");
+                    System.out.print("Masukkan NIK baru : ");
+                    nik = scanner.nextLine();
+                }
                 break;
             case 2:
-                do {
-                    System.out.print("Masukkan Username: ");
-                    username = scanner.nextLine();
-                    if (username.isEmpty()) {
-                        System.out.println(
-                                (char) 27 + "[01;31m Username tidak boleh kosong. Silakan coba lagi." + (char) 27
-                                        + "[00;00m");
-                    } else if (existingUsernames.contains(username)) {
-                        System.out.println((char) 27 + "[01;31m Username telah digunakan. Silakan pilih username lain."
-                                + (char) 27 + "[00;00m");
-                    }
-                } while (username.isEmpty() || existingUsernames.contains(username));
-                existingUsernames.add(username);
+                scanner.nextLine();
+                System.out.println("Masukkan Alamat Baru : ");
+                address = scanner.nextLine();
+                while (address.trim().isEmpty()) {
+                    System.out.println((char) 27 + "[01;31m Alamat tidak boleh kosong" + (char) 27+ "[00;00m");
+                    System.out.println("Masukkan Alamat Baru : ");
+                    address = scanner.nextLine();
+                }
                 break;
             case 3:
-                do {
-                    System.out.print("Masukkan Tanggal Lahir : ");
-                    dateOfBirth = scanner.nextLine();
-
-                    if (dateOfBirth.isEmpty()) {
-                        System.out.println((char) 27 + "[01;31m Tanggal Lahir tidak boleh kosong. Silakan coba lagi."
-                                + (char) 27 + "[00;00m");
-                    }
-                } while (dateOfBirth.isEmpty());
+                scanner.nextLine();
+                System.out.println("Masukkan Nomor Telephone Baru : ");
+                phoneNumber = scanner.nextLine();
+                while (phoneNumber.trim().isEmpty()) {
+                    System.out.println((char) 27 + "[01;31m Nomor Telephone tidak boleh kosong" + (char) 27+ "[00;00m");
+                    System.out.println("Masukkan Nomor Telephone Baru : ");
+                    phoneNumber = scanner.nextLine();
+                }
                 break;
             case 4:
-                do {
-                    System.out.print("Masukkan No Telephone : ");
-                    phoneNumber = scanner.nextLine();
-
-                    if (phoneNumber.isEmpty()) {
-                        System.out.println((char) 27 + "[01;31m Nomor Telephone tidak boleh kosong. Silakan coba lagi."
-                                + (char) 27 + "[00;00m");
-                    }
-                } while (phoneNumber.isEmpty());
-                break;
-            case 5:
-                do {
-                    System.out.print("Masukkan Tanggal Lahir : ");
+                scanner.nextLine();
+                System.out.println("Masukkan Tanggal Lahir Baru : ");
+                dateOfBirth = scanner.nextLine();
+                while (dateOfBirth.trim().isEmpty()) {
+                    System.out.println((char) 27 + "[01;31m Tanggal lahir tidak boleh kosong" + (char) 27+ "[00;00m");
+                    System.out.println("Masukkan Tanggal Lahir Baru : ");
                     dateOfBirth = scanner.nextLine();
-
-                    if (dateOfBirth.isEmpty()) {
-                        System.out.println((char) 27 + "[01;31m Tanggal Lahir tidak boleh kosong. Silakan coba lagi."
-                                + (char) 27 + "[00;00m");
-                    }
-                } while (dateOfBirth.isEmpty());
+                }
             case 0:
                 clearScreen();
                 return;
@@ -1601,7 +1591,11 @@ class User {
         informasiUser();
     }
 
-    public void lapor(Scanner scanner){
+    public void lapor() {
+        Scanner scanner = new Scanner(System.in);
+        int pilihKendala;
+        String kendala; // Declare the variable
+    
         clearScreen();
         System.out.println("-----------------------------------------------------");
         System.out.println("|                                                   |");
@@ -1610,11 +1604,42 @@ class User {
         System.out.println("-----------------------------------------------------");
         System.out.println("");
         System.out.println("1. Lapor");
+        System.out.println("2. Lihat laporan anda");
         System.out.println("0. Keluar");
-        String kendala = scanner.nextLine();
-
+        System.out.print("Pilihan anda : ");
+        pilihKendala = scanner.nextInt();
+    
+        switch (pilihKendala) {
+            case 1:
+                clearScreen();
+                System.out.println("-----------------------------------------------------");
+                System.out.println("|                                                   |");
+                System.out.println("|                Lapor Kendala Anda                 |");
+                System.out.println("|                                                   |");
+                System.out.println("-----------------------------------------------------");
+                scanner.nextLine();
+                System.out.print("Tulis kendala anda: ");
+                kendala = scanner.nextLine();
+                while (kendala.trim().isEmpty()){
+                    System.out.println((char) 27 + "[01;31m Laporan tidak boleh kosong" + (char) 27+ "[00;00m");
+                    System.out.print("Tulis kendala anda : ");
+                    kendala = scanner.nextLine();
+                }
+                System.out.println("--------------------------------------------------------------------------------");
+                System.out.println("|                                                                              |");
+                System.out.println("|           Kendala berhasil dilaporkan tunggu balasan dari admin !            |");
+                System.out.println("|                                                                              |");
+                System.out.println("--------------------------------------------------------------------------------");
+                break;
+            case 2:
+            case 0:
+                clearScreen();
+                return;
+            default:
+                break;
+        }
     }
-
+    
     public void keluar() {
         Scanner scanner = new Scanner(System.in);
         int kembali;
