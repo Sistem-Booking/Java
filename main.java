@@ -717,13 +717,14 @@ class main {
         clearScreen();
         while (true) {
             System.out.println("");
-            System.out.println("1. Pesan Gedung");
+            System.out.println("1. Pemesanan Gedung");
             System.out.println("2. Check In");
             System.out.println("3. Akhiri Pemesanan");
             System.out.println("4. Informasi User");
-            System.out.println("5. Lihat Informasi Yang Di Booking Sekarang");
-            System.out.println("6. Lihat History Pemesanan");
-            System.out.println("7. Keluar");
+            System.out.println("5. Pemesanan Saat Ini");
+            System.out.println("6. History Pemesanan");
+            System.out.println("7. Lapor");
+            System.out.println("8. Keluar");
             System.out.print("Masukkan Pilihanmu : ");
             int userChoice = scanner.nextInt();
             scanner.nextLine();
@@ -748,6 +749,9 @@ class main {
                     loggedInUser.viewBookingHistory();
                     break;
                 case 7:
+                    loggedInUser.lapor(scanner);
+                    break;
+                case 8:
                     System.out.println("-------------------------------------------------------");
                     System.out.println("|                                                     |");
                     System.out.println("|                 Anda sudah Logout                   |");
@@ -782,11 +786,11 @@ class main {
 
         if (foundUser != null) {
             clearScreen();
-            System.out.println("===================================================================================");
-            System.out.println("                           Informasi User yang Anda Cari");
-            System.out.println("===================================================================================");
+            System.out.println("------------------------------------------------------------------------------------------------------");
+            System.out.println("                                    Informasi User yang Anda Cari");
+            System.out.println("------------------------------------------------------------------------------------------------------");
             System.out.println(" Nik           | Username          | Tanggal Lahir  | No Telephone | Alamat ");
-            System.out.println("===================================================================================");
+            System.out.println("------------------------------------------------------------------------------------------------------");
 
             // Format output menjadi tabel
             String nik = String.format("%-15s", foundUser.getNik());
@@ -796,7 +800,7 @@ class main {
             String alamat = String.format("%-12s", foundUser.getAddress());
 
             System.out.println(nik + " | " + username + " | " + tanggalLahir + " | " + noTelephone + " | " + alamat);
-            System.out.println("===================================================================================");
+            System.out.println("------------------------------------------------------------------------------------------------------");
         } else {
             clearScreen();
             System.out.println("----------------------------------------------------------------------------");
@@ -1595,6 +1599,20 @@ class User {
         }
         clearScreen();
         informasiUser();
+    }
+
+    public void lapor(Scanner scanner){
+        clearScreen();
+        System.out.println("-----------------------------------------------------");
+        System.out.println("|                                                   |");
+        System.out.println("|               Lapor jika ada masalah !            |");
+        System.out.println("|                                                   |");
+        System.out.println("-----------------------------------------------------");
+        System.out.println("");
+        System.out.println("1. Lapor");
+        System.out.println("0. Keluar");
+        String kendala = scanner.nextLine();
+
     }
 
     public void keluar() {
