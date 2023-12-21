@@ -191,6 +191,15 @@ class main {
         }
     }
 
+    private static void voucher(Scanner scanner){
+        clearScreen();
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("|                                                           |");
+        System.out.println("|                       Halaman Voucher                     |");
+        System.out.println("|                                                           |");
+        System.out.println("-------------------------------------------------------------");
+    }
+
     private static void tanggapiLaporan(Scanner scanner) {
         String statusLaporan = "Ada Laporan"; // Declare statusLaporan
         if ("Ada Laporan".equals(statusLaporan)) {
@@ -895,7 +904,7 @@ class User {
     private static String tanggapan;
     private String choicePembayaran = "";
     private int bookingNumber = 0; // Berikut adalah Nomor pemesanan
-    private double price;
+    private static double price;
     private String statusPembayaran = "Belum Lunas";
     private static final double HARGA_PERNIKAHAN = 1500000.0;
     private static final double HARGA_OLAH_RAGA = 1500000.0;
@@ -1285,6 +1294,20 @@ class User {
                 System.out.println("Pilihan Gedung tidak valid.");
                 return;
         }
+        System.out.print("Apakah Anda memiliki kode voucher? (y/n): ");
+        String voucher = scanner.next();
+
+        if (voucher.equalsIgnoreCase("y")) {
+            System.out.print("Masukkan kode voucher: ");
+            String voucherCode = scanner.next();
+
+            // Cek apakah kode voucher valid (contoh: jika kode adalah "DISKON10")
+            if (voucherCode.equalsIgnoreCase("DISKON10")) {
+                applyDiscount();
+            } else {
+                System.out.println("Kode voucher tidak valid.");
+            }
+        }
         System.out.println("-------------------------------------");
         System.out.println("");
         System.out.println("Total Harga: " + formatToRupiah(price));
@@ -1321,6 +1344,15 @@ class User {
         System.out.println("------------------------------------------------");
         statusPemesanan = "Dipesan";
         bookingNumber++;
+    }
+
+    private static void applyDiscount() {
+        // Mengurangkan harga sebesar 10%
+        double discount = 0.1;
+        double discountedPrice = price - (price * discount);
+        price = discountedPrice;
+
+        System.out.println("Diskon 10% diterapkan. Harga setelah diskon: " + formatToRupiah(discountedPrice));
     }
 
     public void checkIn(Scanner scanner) {
@@ -1720,12 +1752,12 @@ class User {
                 kendala = scanner.nextLine();
             addLaporan(kendala);
             setStatusLaporan("Ada Laporan");
+        }
             System.out.println("--------------------------------------------------------------------------------");
             System.out.println("|                                                                              |");
             System.out.println("|           Kendala berhasil dilaporkan tunggu balasan dari admin !            |");
             System.out.println("|                                                                              |");
             System.out.println("--------------------------------------------------------------------------------");
-        }
     }
 
     public void lihatLaporan(){
