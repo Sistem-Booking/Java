@@ -372,8 +372,6 @@ class main {
                 String jenisGedung = "Belum memesan";
                 String fasilitas = "Belum memesan";
                 String opsiPembayaran = "Belum memesan";
-                String rating = "Belum memesan";
-                String ulasan = "Belum memesan";
                 String [][] bookingHistory = user.getBookingHistory();
                 for (int i = 0; i < bookingHistory.length; i++) {
                     if (bookingHistory[i][0] != null){
@@ -382,8 +380,6 @@ class main {
                             jenisGedung = bookingHistory[i][0];
                             fasilitas = bookingHistory[i][6];
                             opsiPembayaran = bookingHistory[i][1];
-                            rating = bookingHistory[i][7];
-                            ulasan = bookingHistory[i][8];
                         }
                     }
                 }
@@ -394,8 +390,6 @@ class main {
                 System.out.println("\t\tJenis Gedung    : " + jenisGedung);
                 System.out.println("\t\tFasilitas       : " + fasilitas);
                 System.out.println("\t\tOpsi Pembayaran : " + opsiPembayaran);
-                System.out.println("\t\tRating          : " + rating);
-                System.out.println("\t\tUlasan          : " + ulasan);
                 System.out.println("");
                 System.out.println("-------------------------------------------------------------");
 
@@ -437,8 +431,6 @@ class main {
                     String jenisGedung = "Belum memesan";
                     String fasilitas = "Belum memesan";
                     String opsiPembayaran = "Belum memesan";
-                    String rating = "Belum memesan";
-                    String ulasan = "Belum memesan";
                     String [][] bookingHistory = user.getBookingHistory();
                     for (int i = 0; i < bookingHistory.length; i++) {
                         if (bookingHistory[i][0] != null){
@@ -447,8 +439,6 @@ class main {
                                 jenisGedung = bookingHistory[i][0];
                                 fasilitas = bookingHistory[i][6];
                                 opsiPembayaran = bookingHistory[i][1];
-                                rating = bookingHistory[i][7];
-                                ulasan = bookingHistory[i][8];
                             }
                         }
                     }
@@ -459,8 +449,6 @@ class main {
                     System.out.println("\t\tJenis Gedung    : " + jenisGedung);
                     System.out.println("\t\tFasilitas       : " + fasilitas);
                     System.out.println("\t\tOpsi Pembayaran : " + opsiPembayaran);
-                    System.out.println("\t\tRating          : " + rating);
-                    System.out.println("\t\tUlasan          : " + ulasan);
                     System.out.println("");
                     System.out.println("-------------------------------------------------------------");
 
@@ -1471,13 +1459,6 @@ class User {
             System.out.println("  Harga Gedung: " + formatToRupiah(price));
             System.out.println("  Opsi Pembayaran: " + bookingInfo[1]);
             System.out.println("+------------+-----------------+------------------+");
-
-            System.out.print("Beri rating 1-5 : ");
-            int rating = scanner.nextInt();
-            scanner.nextLine();
-            System.out.print("Berikan Ulasan : ");
-            String ulasan = scanner.nextLine();
-            addRatingAndUlasan(rating, ulasan);
             System.out.println("");
             System.out.println("-----------------------------------------------------------");
             System.out.println("|                                                         |");
@@ -1496,16 +1477,6 @@ class User {
             System.out.println("--------------------------------------------------");
         }
     }
-
-    public void addRatingAndUlasan(int rating, String ulasan){
-        if (bookingInfo == null){
-            bookingInfo = new String [15];
-        }
-        bookingInfo[7] = String.valueOf(rating);
-        bookingInfo[8] = ulasan;
-        historyBooking(bookingInfo);
-    }
-
     public void viewBooking() {
         if ("Dipesan".equals(statusPemesanan.trim())) {
             clearScreen();
